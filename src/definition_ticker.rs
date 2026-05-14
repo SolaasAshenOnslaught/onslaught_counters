@@ -26,7 +26,14 @@ impl Default for Ticker {
 }
 
 impl Ticker {
+
+    /// Used to advance a ticker.  Takes in a time.delta() call off the Res<Time> resource that Bevy provides.
+    ///
+    /// If you're making a custom ticking system and have stripped out the ticking systems provided
+    /// in the systems of this plugin, then please note that you must run this each frame for time to move normally.
     pub fn tick(&mut self, delta: std::time::Duration) {
+
+        // Checking/destructuring to see if a timer and a number exist inside the Ticker before trying to manipulate its contents.
         if let (Some(timer), Some(number)) = (&mut self.timer, &mut self.number) {
 
             // Advance timer by the difference in time between frames.

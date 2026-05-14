@@ -31,14 +31,7 @@ pub fn chronolog_ticking(
     let delta = time.delta();
 
     for mut log in &mut logs {
-        if let Some(ticker) = &mut log.ticker_for_hundreds    { ticker.tick(delta); }
-        if let Some(ticker) = &mut log.ticker_for_tens        { ticker.tick(delta); }
-        if let Some(ticker) = &mut log.ticker_for_ones        { ticker.tick(delta); }
-        if let Some(ticker) = &mut log.ticker_for_tenths      { ticker.tick(delta); }
-        if let Some(ticker) = &mut log.ticker_for_hundredths  { ticker.tick(delta); }
-        if let Some(ticker) = &mut log.ticker_for_thousandths { ticker.tick(delta); }
-
-        //println!("{}", log.get_number());
+        log.tick(delta);
     }
 }
 
@@ -53,7 +46,6 @@ pub fn ticker_ticking(
 
     for mut ticker in &mut tickers {
         ticker.tick(delta);
-        //println!("{}", ticker.get_number());
     }
 }
 // ####################################################################################################################### //
