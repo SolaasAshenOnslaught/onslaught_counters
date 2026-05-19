@@ -7,11 +7,11 @@ use bevy::prelude::*;
 ///
 /// All fields of Ticker have getters, and only digit has no setter.
 ///
-/// # TICKING LOOPS AT I8::MAX
-/// Tickers don't stop ticking.  Once the next tick addition hits i8::MAX it will zero out current_value using to_zero().
+/// # TICKING LOOPS AT 100
+/// Tickers don't stop ticking.  Once the next tick addition hits 100 it will zero out current_value using to_zero().
 /// **This is crucial to understand.** Not recognizing that ticking loops on these structures will make for poor usage of them.
 /// Tickers are a building block element to making larger time structures or for highly compartmentalized timer usage.
-/// **If you're okay with values from -128 to 127 for your timers, then feel free to go ham with Tickers.**  Otherwise,
+/// **If you're okay with values from -100 to 100 for your timers, then feel free to go ham with Tickers.**  Otherwise,
 /// I recommend the Chronolog structure.
 #[derive(Component, Reflect, Debug)]
 pub struct Ticker {
@@ -24,13 +24,6 @@ pub struct Ticker {
 impl Default for Ticker {
 
     /// The default ticker counts up every second when its .tick method is used and all other fields start at 0.
-    ///
-    /// # TICKING LOOPS AT I8::MAX
-    /// Tickers don't stop ticking.  Once the next tick addition hits i8::MAX it will zero out current_value using to_zero().
-    /// **This is crucial to understand.** Not recognizing that ticking loops on these structures will make for poor usage of them.
-    /// Tickers are a building block element to making larger time structures or for highly compartmentalized timer usage.
-    /// **If you're okay with values from -128 to 127 for your timers, then feel free to go ham with Tickers.**  Otherwise,
-    /// I recommend the Chronolog structure.
     fn default() -> Self {
         Self {
             start_value: 0,
@@ -43,19 +36,51 @@ impl Default for Ticker {
 
 impl Ticker {
 
-    /// Develops a new ticker using a passed value for its start_value.
+    /// Develops a new Ticker using a passed value for its start_value.
     ///
-    /// # TICKING LOOPS AT I8::MAX
-    /// Tickers don't stop ticking.  Once the next tick addition hits i8::MAX it will zero out current_value using to_zero().
-    /// **This is crucial to understand.** Not recognizing that ticking loops on these structures will make for poor usage of them.
-    /// Tickers are a building block element to making larger time structures or for highly compartmentalized timer usage.
-    /// **If you're okay with values from -128 to 127 for your timers, then feel free to go ham with Tickers.**  Otherwise,
-    /// I recommend the Chronolog structure.
+    /// When a second passes, the timer within the Ticker fires (increases current_value by 1 for each second that passes).
     pub fn new(starting_value: i8) -> Self {
+
+        assert!(starting_value >= -100 && starting_value <= 100, "start_value must be between -100 and 100. Got {}.", starting_value);
+
         Self {
             start_value:    starting_value,
             current_value:  starting_value,
             digit:          (starting_value as i16).abs() as i8 % 10,                   // Have to cast a bit extra due to the possibility that start value is i8::MIN (-128 flipping to 128 is out of i8 range).
+            timer:          Timer::from_seconds(1.0, TimerMode::Repeating),
+        }
+    }
+
+    /// Develops a new Ticker using a passed value for its start_value.
+    ///
+    /// When a INSERT_VALUE_YOU_PASS_IN_HERE passes, the timer within the Ticker fires (increases current_value by 1 for each INSERT_VALUE_YOU_PASS_IN_HERE that passes).
+    pub fn new_with_timer(starting_value: i8, duration: f32) -> Self {
+
+        assert!(starting_value >= -100 && starting_value <= 100, "start_value must be between -100 and 100. Got {}.", starting_value);
+
+        Self {
+            start_value:    starting_value,
+            current_value:  starting_value,
+            digit:          (starting_value as i16).abs() as i8 % 10,
+            timer:          Timer::from_seconds(duration, TimerMode::Repeating),
+        }
+    }
+
+    /// Creates a Ticker for countdown purposes.  Pass in the desired countdown duration as a number of seconds to pass.
+    ///
+    /// Valid countdown durations are 1 to 99 (pass 10 in for a 10 second countdown).  **Values outside
+    /// this range will cause a panic.**
+    ///
+    /// The start_value for Tickers that use this constructor is calculated by (100 - INSERT_VALUE_YOU_PASS_IN_HERE).
+    pub fn new_countdown(duration: i8) -> Self {
+
+        assert!(duration >= 1 && duration <= 99, "Duration must be between 1 and 99. Got {}.", duration);
+
+        let start = 100 - duration;
+        Self {
+            start_value:    start,
+            current_value:  start,
+            digit:          start.abs() % 10,
             timer:          Timer::from_seconds(1.0, TimerMode::Repeating),
         }
     }
@@ -95,29 +120,27 @@ impl Ticker {
     /// regards to the loop.  This doesn't make them weak, matter of fact their design is what allows
     /// them to create good countdown logic in larger tick-based structures while still being memory
     /// efficient.  If the intention is to create a timer of some sort for countdown purposes, then
-    /// I recommend using the Chronolog instead as its better suited for it.  Also, if you can think of a
-    /// way to get around this problem while still keeping Tickers memory efficient, then I'm all ears.**
+    /// I recommend using the Chronolog instead as its better suited for it.**
     ///
     /// ## LOOP DESIGN MEANS FOR POOR COUNTDOWN LOGIC
-    /// Due to how ticking resets current_value to 0 when total ticks exceed the i8::MAX value,
-    /// countdowns only go up to 127 seconds.  If we were to set our start_value to 120, then after
-    /// 7 seconds pass the i8::MAX wall would be hit and the get_elapsed_value() calculation
+    /// Due to how ticking resets current_value to 0 when total ticks hit 100,
+    /// countdowns only go up to 99 timer fires.  If we were to set our start_value to 95, then after
+    /// 5 timer fires pass the 100 wall would be hit and the get_elapsed_value() calculation
     /// would essentially reset as well since it uses current_value to get its result.
+    ///
+    /// If you still want to use Tickers for countdowns, then I recommend any number between 1 to 90 for the start_value.
+    /// The maximum countdown duration is (100 - start_value) timer fires.
+    ///
+    /// 1 for the start_value is a 99 timer fire countdown.
+    ///
+    /// 50 for the start_value is a 50 timer fire countdown.
+    ///
+    /// 90 for the start_value is a 10 timer fire countdown.
     ///
     /// ## NEGATIVE START_VALUES
     /// Since get_elapsed_value() always returns positives, this will cause get_countdown_value() to
     /// return 0 if the start_value is a negative number.  Avoid using negative values, or setting/modifying
     /// start_value to become negative, if you want reliable countdown usage when solely using a Ticker.
-    ///
-    /// ## WHAT START_VALUES ARE GOOD FOR COUNTDOWN IN TICKERS?
-    /// If you still want to use Tickers for countdowns, then I recommend any number between 27 to 117 for the start_value.
-    /// The maximum countdown duration is (127 - start_value) seconds.
-    ///
-    /// 27 for the start_value is a 100 second countdown.
-    ///
-    /// 77 for the start_value is a 50 second countdown.
-    ///
-    /// 117 for the start_value is a 10 second countdown.
     pub fn get_countdown_value(&self) -> i8 {
         if self.get_elapsed_value() >= self.start_value {
             0
@@ -181,15 +204,15 @@ impl Ticker {
     /// Adds to the start_value of the ticker by the passed value.  Can take in negatives for subtraction.
     ///
     /// Will not let the result of summing cause overflow or wrapping.
-    pub fn add_to_start(&mut self, value: i8) {
-        self.start_value = self.start_value.saturating_add(value);
+    pub fn add_to_start(&mut self, value: isize) {
+        self.start_value = (self.start_value as isize + value).clamp(-100, 100) as i8;
     }
 
     /// Adds to the current_value of the ticker by the passed value.  Can take in negatives for subtraction.
     ///
     /// Will not let the result of summing cause overflow or wrapping.
-    pub fn add_to_current(&mut self, value: i8) {
-        self.current_value = self.current_value.saturating_add(value);
+    pub fn add_to_current(&mut self, value: isize) {
+        self.current_value = (self.current_value as isize + value).clamp(-100, 100) as i8;
     }
 
     /// Returns true if the current_value of the Ticker is below its start_value, false otherwise.
@@ -222,14 +245,14 @@ impl Ticker {
 
     /// Sets current_value to its minimum value (will alter the digit field to reflect this change).
     pub fn to_min(&mut self) {
-        self.current_value = i8::MIN;
-        self.digit = 8;
+        self.current_value = -100;
+        self.digit = 0;
     }
 
     /// Sets current_value to its maximum value (will alter the digit field to reflect this change).
     pub fn to_max(&mut self) {
-        self.current_value = i8::MAX;
-        self.digit = 7;
+        self.current_value = 100;
+        self.digit = 0;
     }
 
     /// Used to advance a ticker.  Takes in a time.delta() call off the time resource (Res<Time>) that Bevy provides.
@@ -237,11 +260,11 @@ impl Ticker {
     /// If you're making a custom ticking system and have stripped out the ticking systems provided
     /// in the systems of this plugin, then please note that you must run this each frame for time to move normally.
     ///
-    /// # TICKING LOOPS AT I8::MAX
-    /// Tickers don't stop ticking.  Once the next tick addition hits i8::MAX it will zero out current_value using to_zero().
+    /// # TICKING LOOPS AT 100
+    /// Tickers don't stop ticking.  Once the next tick addition hits 100 it will zero out current_value using to_zero().
     /// **This is crucial to understand.** Not recognizing that ticking loops on these structures will make for poor usage of them.
     /// Tickers are a building block element to making larger time structures or for highly compartmentalized timer usage.
-    /// **If you're okay with values from -128 to 127 for your timers, then feel free to go ham with Tickers.**  Otherwise,
+    /// **If you're okay with values from -100 to 100 for your timers, then feel free to go ham with Tickers.**  Otherwise,
     /// I recommend the Chronolog structure.
     pub fn tick(&mut self, delta: std::time::Duration) {
 
@@ -255,14 +278,14 @@ impl Ticker {
 
             let new_ticks: i8 = ticks as i8;
 
-            // This condition is effectively resetting the current_value and digit to zero if the i8
-            // max value gets hit from tick addition.  This allows tickers to tick forever.
-            if self.current_value.saturating_add(new_ticks) == i8::MAX {
+            // This condition is effectively resetting the current_value and digit to zero if 100
+            // gets hit from tick addition.  This allows tickers to tick forever.
+            if self.current_value.saturating_add(new_ticks) >= 100 {
                 self.to_zero();
             }
             else {
                 self.current_value = self.current_value.saturating_add(new_ticks);
-                self.digit = (self.digit + new_ticks).abs() % 10;
+                self.digit = self.current_value.abs() % 10;
             }
         }
     }
