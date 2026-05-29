@@ -14,6 +14,9 @@ fn main() {
             test_new_with_countdown,
             test_getters,
             test_set_current_value,
+        ).chain())
+
+        .add_systems(Startup, (
             test_set_start_value,
             test_add_to_start,
             test_add_to_current,
@@ -21,6 +24,10 @@ fn main() {
             test_zero_out,
             test_current_to_min,
             test_current_to_max,
+            test_comparisons,
+        ).chain())
+
+        .add_systems(Startup, (
             test_comparisons,
             test_get_distance_from_start,
             test_get_countdown_value,
