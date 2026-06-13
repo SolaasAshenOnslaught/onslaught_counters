@@ -2,19 +2,6 @@
 // Imports
 use bevy::prelude::*;
 
-// Constants
-const TICKER_MIN_VALUE: i8 = -100;
-const TICKER_MAX_VALUE: i8 = 100;
-const COUNTDOWN_MIN_VALUE: i8 = 1;
-const COUNTDOWN_MAX_VALUE: i8 = TICKER_MAX_VALUE;
-const LOOP_POINT: i8 = 100;
-
-#[derive(Reflect, PartialEq, Debug)]
-pub enum TickerStates {
-    Ticking,
-    Paused,
-}
-
 /// By themselves, tickers can be used to create simple timers.  Although they are best used in conjunction
 /// as an inner element to a greater time structure to create some wicked tickety-tocking.
 ///
@@ -24,14 +11,18 @@ pub enum TickerStates {
 /// Tickers don't stop ticking.  Once the next tick addition hits [`LOOP_POINT`] it will zero out current_value using to_zero().
 /// **This is crucial to understand.** Not recognizing that ticking loops on these structures will make for poor usage of them.
 /// Tickers are a building block element to making larger time structures or for highly compartmentalized timer usage.
-/// **If you're okay with values from [`TICKER_MIN_VALUE`] to [`TICKER_MAX_VALUE`] for your timers, then feel free to go ham with Tickers.**
+/// **If you're okay with values from [`i8::MIN`] to [`TICKER_MAX_VALUE`] for your timers, then feel free to go ham with Tickers.**
 /// Otherwise, I recommend the Chronolog structure.
 #[derive(Component, Reflect, Debug)]
 pub struct Ticker {
-    start_value: i8,
-    current_value: i8,
-    timer: Timer,
-    state: TickerStates,
+    pub start_value: i8,
+    pub current_value: i8,
+    pub interval: f32,
+    pub is_paused: bool,
+    pub is_looping: bool,
+    pub is_ticking_up: bool,
+    pub is_handling_frame_spikes: bool,
+    accrued_delta: f32,
 }
 
 impl Default for Ticker {
@@ -39,10 +30,14 @@ impl Default for Ticker {
     /// The default ticker counts up every second when its .tick method is used and all other fields start at 0.
     fn default() -> Self {
         Self {
-            start_value:    0,
-            current_value:  0,
-            timer:          Timer::from_seconds(1.0, TimerMode::Repeating),
-            state:          TickerStates::Ticking,
+            start_value:                0,
+            current_value:              0,
+            interval:                   1.0,
+            is_paused:                  false,
+            is_looping:                 true,
+            is_ticking_up:              true,
+            is_handling_frame_spikes:   true,
+            accrued_delta:              0.0,
         }
     }
 }
@@ -56,15 +51,15 @@ impl Ticker {
     ///
     /// When a second passes, the timer within the Ticker fires (increases current_value by 1 for each second that passes).
     pub fn new(starting_value: i8) -> Self {
-
-        // Panic Evaluation
-        check_value(starting_value, TICKER_MIN_VALUE, TICKER_MAX_VALUE);
-
         Self {
-            start_value:    starting_value,
-            current_value:  starting_value,
-            timer:          Timer::from_seconds(1.0, TimerMode::Repeating),
-            state:          TickerStates::Ticking,
+            start_value:                starting_value,
+            current_value:              starting_value,
+            interval:                   1.0,
+            is_paused:                  false,
+            is_looping:                 true,
+            is_ticking_up:              true,
+            is_handling_frame_spikes:   true,
+            accrued_delta:              0.0,
         }
     }
 
@@ -74,36 +69,35 @@ impl Ticker {
     /// **Values outside this range will cause a panic.**
     ///
     /// When the passed duration in second(s) passes, the timer within the Ticker fires (increases current_value by 1 for each duration that passes).
-    pub fn new_with_duration(starting_value: i8, duration: f32) -> Self {
-
-        // Panic Evaluation
-        check_value(starting_value, TICKER_MIN_VALUE, TICKER_MAX_VALUE);
-
+    pub fn new_with_interval(starting_value: i8, seconds_required_for_a_tick: f32) -> Self {
         Self {
-            start_value:    starting_value,
-            current_value:  starting_value,
-            timer:          Timer::from_seconds(duration, TimerMode::Repeating),
-            state:          TickerStates::Ticking,
+            start_value:                starting_value,
+            current_value:              starting_value,
+            interval:                   seconds_required_for_a_tick,
+            is_paused:                  false,
+            is_looping:                 true,
+            is_ticking_up:              true,
+            is_handling_frame_spikes:   true,
+            accrued_delta:              0.0,
         }
     }
 
     /// Creates a Ticker for countdown purposes.  Pass in the desired countdown duration as a number of seconds to pass.
     ///
-    /// Valid countdown durations are [`COUNTDOWN_MIN_VALUE`] to [`COUNTDOWN_MAX_VALUE`] (pass 10 in for a 10-second countdown); inclusive range.
+    /// Valid countdown durations are 1 to [`i8::MAX`] (pass 10 in for a 10-second countdown); inclusive range.
     /// **Values outside this range will cause a panic.**
     ///
     /// The start_value for Tickers that use this constructor is calculated by ([`LOOP_POINT`] - DURATION).
-    pub fn new_with_countdown(duration: i8) -> Self {
-
-        // Panic Evaluation
-        check_value(duration, COUNTDOWN_MIN_VALUE, COUNTDOWN_MAX_VALUE);
-
-        let starting_value = LOOP_POINT - duration;
+    pub fn new_countdown(trigger_value: i8, countdown_duration: i8) -> Self {
         Self {
-            start_value:    starting_value,
-            current_value:  starting_value,
-            timer:          Timer::from_seconds(1.0, TimerMode::Repeating),
-            state:          TickerStates::Ticking,
+            start_value:                trigger_value,
+            current_value:              countdown_duration,
+            interval:                   1.0,
+            is_paused:                  false,
+            is_looping:                 false,
+            is_ticking_up:              false,
+            is_handling_frame_spikes:   true,
+            accrued_delta:              0.0,
         }
     }
 
@@ -130,21 +124,6 @@ impl Ticker {
     /// RESULT = CURRENT_VALUE - START_VALUE
     pub fn get_difference(&self) -> i16 {
         self.current_value as i16 - self.start_value as i16
-    }
-
-    /// Will return 0 once the countdown is complete, otherwise returns the number of seconds remaining.
-    ///
-    /// # WARNING
-    /// Not advised to use with Tickers that were **NOT** made with new_with_countdown.  Use get_countdown_value
-    /// at your own risk for non-countdown Tickers.
-    pub fn get_countdown_value(&self) -> i8 {
-
-        if self.current_value <= 0 {
-            0
-        }
-        else {
-            LOOP_POINT - self.current_value
-        }
     }
 
     /// Returns the digit in the ones-place of current_value.
@@ -223,56 +202,6 @@ impl Ticker {
         }
     }
 
-    /// Will return the Bevy timer being used in the Ticker.
-    ///
-    /// To my knowledge, this method is for the most part useless since Tickers are only assigned
-    /// to repeating Bevy timers that use from_second with a value of 1.0.  BUT, in the case that I'm
-    /// wrong, this method is around for anybody that needs to get the Timer inside a Ticker.
-    pub fn get_timer(&self) -> &Timer {
-        &self.timer
-    }
-
-    /// Returns the active state that the Ticker is in.
-    pub fn get_state(&self) -> &TickerStates {
-        &self.state
-    }
-
-    /// Allows manipulation of the current_value.  Passed value must be within acceptable range, if not a panic will occur.
-    ///
-    /// Both start_value and current_value have setters to allow for time manipulation shenanigans.  If an
-    /// event were to occur and someone wanted to drastically alter how time worked then they can use the
-    /// setters to make some interesting mechanics.
-    pub fn set_current_value(&mut self, value: i8) {
-
-        // Panic Evaluation
-        check_value(value, TICKER_MIN_VALUE, TICKER_MAX_VALUE);
-
-        self.current_value = value;
-    }
-
-    /// Allows manipulation of the start_value.  Passed value must be within acceptable range, if not a panic will occur.
-    ///
-    /// Both start_value and current_value have setters to allow for time manipulation shenanigans.  If an
-    /// event were to occur and someone wanted to drastically alter how time worked then they can use the
-    /// setters to make some interesting mechanics.
-    pub fn set_start_value(&mut self, value: i8) {
-
-        // Panic Evaluation
-        check_value(value, TICKER_MIN_VALUE, TICKER_MAX_VALUE);
-
-        self.start_value = value;
-    }
-
-    /// Sets current_value to its minimum value (will alter the digit field to reflect this change).
-    pub fn set_current_to_min(&mut self) {
-        self.current_value = TICKER_MIN_VALUE;
-    }
-
-    /// Sets current_value to its maximum value (will alter the digit field to reflect this change).
-    pub fn set_current_to_max(&mut self) {
-        self.current_value = TICKER_MAX_VALUE;
-    }
-
     /// Returns true if the current_value of the Ticker is below its start_value, false otherwise.
     pub fn is_below_start_value(&self) -> bool {
         self.current_value < self.start_value
@@ -292,16 +221,24 @@ impl Ticker {
         self.current_value == self.start_value
     }
 
-    /// Pauses a timer within the ticker.
+    /// Pauses a ticker's ticking.
     pub fn pause(&mut self) {
-        self.timer.pause();
-        self.state = TickerStates::Paused;
+        self.is_paused = true;
     }
 
-    /// Unpauses a timer within a ticker.
+    /// Unpauses a ticker's ticking.
     pub fn unpause(&mut self) {
-        self.timer.unpause();
-        self.state = TickerStates::Ticking;
+        self.is_paused = false;
+    }
+
+    /// Causes the ticker's current_value to count up.
+    pub fn tick_up(&mut self) {
+        self.is_ticking_up = true;
+    }
+
+    /// Causes the ticker's current_value to count down.
+    pub fn tick_down(&mut self) {
+        self.is_ticking_up = false;
     }
 
     /// Will set the current_value to be equal to the start_value and the digit field of the Ticker
@@ -316,14 +253,14 @@ impl Ticker {
     ///
     /// Will not let the result of summing cause overflow or wrapping; results will always be within [`TICKER_MIN_VALUE`] to [`TICKER_MAX_VALUE`] (inclusive).
     pub fn add_to_start_value(&mut self, value: i8) {
-        self.start_value = self.start_value.saturating_add(value).clamp(TICKER_MIN_VALUE, TICKER_MAX_VALUE);
+        self.start_value = self.start_value.saturating_add(value);
     }
 
     /// Adds to the current_value of the ticker by the passed value.  Can take in negatives for subtraction.
     ///
     /// Will not let the result of summing cause overflow or wrapping; results will always be within [`TICKER_MIN_VALUE`] to [`TICKER_MAX_VALUE`] (inclusive).
     pub fn add_to_current_value(&mut self, value: i8) {
-        self.current_value = self.current_value.saturating_add(value).clamp(TICKER_MIN_VALUE, TICKER_MAX_VALUE);
+        self.current_value = self.current_value.saturating_add(value);
     }
 
     /// Used to advance a ticker.  Takes in a time.delta() call off the time resource (Res<Time>) that Bevy provides.
@@ -337,27 +274,80 @@ impl Ticker {
     /// Tickers are a building block element to making larger time structures or for highly compartmentalized timer usage.
     /// **If you're okay with values from [`TICKER_MIN_VALUE`] to [`TICKER_MAX_VALUE`] for your timers, then feel free to go ham with Tickers.**
     /// Otherwise, I recommend the Chronolog structure.
-    pub fn tick(&mut self, delta: std::time::Duration) {
+    pub fn tick(&mut self, delta: f32) {
 
-        if self.state == TickerStates::Ticking {
+        // PAUSE STATUS
+        // If paused, go no further as we don't need to calculate the new current_value since the Ticker is frozen.
+        if self.is_paused {
+            return;
+        }
 
-            self.timer.tick(delta);
-            let ticks: u32 = self.timer.times_finished_this_tick();
+        // DELTA ACCUMULATION
+        // Add to the accrued delta so that we can later determine if we've gone over the interval value and need to fire another tick.
+        self.accrued_delta += delta;
 
-            if ticks > 0 {
+        // TICK COLLECTION (TC)
+        // Acquiring the amount of tick fires that occurred within the given frame based on if
+        // the Ticker is set to handle frame spikes.
+        let ticks = match self.is_handling_frame_spikes {
 
-                let new_ticks: i8 = ticks as i8;
+            // TC FOR HANDLING FRAME SPIKES
+            // When frame spike handling is active, all ticks that accumulated during a large
+            // delta are collected at once.  The remainder after division is kept in accrued_delta
+            // so that partial progress toward the next tick is not lost between frames.
+            true => {
+                let tocks = (self.accrued_delta / self.interval) as i8;
+                self.accrued_delta %= self.interval;    // Carrying remainder over to keep ticking accuracy.
+                tocks
+            },
 
-                // Saturating add is present in case the amount of ticks received could cause for the addition
-                // on current_value to go beyond the i8::MAX.
-                if self.current_value.saturating_add(new_ticks) == LOOP_POINT {
-                    self.set_current_value(0);
-                }
-                else {
-                    self.current_value = self.current_value.saturating_add(new_ticks);
-                    self.digit = self.current_value.abs() % 10;
-                }
-            }
+            // TC FOR ~NOT~ HANDLING FRAME SPIKES
+            // When frame spike handling is inactive, only one tick is allowed to fire per call
+            // regardless of how large the delta was.  One interval is subtracted from accrued_delta
+            // rather than resetting to zero so that the timer remains accurate over time — any
+            // leftover time beyond the single tick carries into the next frame naturally.
+            false => match self.accrued_delta >= self.interval {
+                true => {
+                    self.accrued_delta -= self.interval;
+                    1
+                },
+                false => 0,
+            },
+        };
+
+        // TICK FIRE TO CHANGE CURRENT_VALUE
+        // Will only ever tick fire if the accrued delta pushed ticks beyond the interval value.
+        // This check ensures we aren't needlessly firing for every frame, rather we are firing
+        // based on if we've passed over the interval threshold using our constant accrual.
+        if ticks > 0 {
+
+            // TICK FIRE DIRECTION
+            // Increase or decrease current_value's new host based on if the Ticker is counting up or down.
+            let new_value = match self.is_ticking_up {
+                true  => self.current_value.saturating_add(ticks),
+                false => self.current_value.saturating_sub(ticks),
+            };
+
+            // RESET DETERMINATION + CURRENT_VALUE ASSIGNMENT
+            // Will change current_value's assignment using new_value based on if the Ticker is set to loop or not.
+            match self.is_looping {
+
+                // LOOPING IS ACTIVE
+                // Assign current_value to its new host and then reset it to the Ticker's start_value
+                // if either of the i8 boundaries were hit.
+                true => {
+                    self.current_value = new_value;
+                    if self.current_value == i8::MAX || self.current_value == i8::MIN {
+                        self.current_value = self.start_value;
+                    }
+                },
+
+                // LOOPING IS INACTIVE
+                // current_value can assume its new host without worry.
+                false => {
+                    self.current_value = new_value;
+                },
+            };
         }
     }
 }
