@@ -1,5 +1,6 @@
 
 use bevy::prelude::*;
+use mirth_engine_testing_tools::{check, TestSet};
 use bevy_time_structures::{Ticker, TickerStates, TimeStructures};
 
 // Tests for Ticker
@@ -20,95 +21,27 @@ fn main() {
             test_add_to_start,
             test_add_to_current,
             test_reset,
-            test_zero_out,
-            test_current_to_min,
-            test_current_to_max,
+            test_set_to_zero,
+            test_set_current_to_min,
+            test_set_current_to_max,
             test_comparisons,
             test_get_distance_from_start,
             test_get_countdown_value,
             test_pause_unpause,
             test_ticker_states,
             test_tick_loop,
-        ).chain().in_set(TestSet::First))
+        ).chain().in_set(TestSet::Set0))
 
         // One and done tests that are intended to panic.
         .add_systems(Startup, (
             test_new_panic_guard,
             test_countdown_panic_guard,
-        ).chain().in_set(TestSet::Second))
+        ).chain().in_set(TestSet::Set1))
 
-        .configure_sets(Startup, TestSet::First.before(TestSet::Second))
+        .configure_sets(Startup, TestSet::Set0.before(TestSet::Set1))
 
         .run();
 }
-
-// ################################################################################################# //
-// HELPERS
-
-/// Used to tell Bevy on .add_systems() calls which tests to run first.  When used in conjunction
-/// with .chain().in_set(INSERT_ENUM_VALUE_HERE) on .add_systems() and with a followed .configure_sets()
-/// call, it will force systems to run in sequential order even when they are split by different
-/// .add_systems() calls. The reason why this exists is to get around Bevy's concurrent running of
-/// add_system groups.
-///
-/// EXAMPLE
-/// ```ignore
-/// .add_systems(Startup, (
-///     system_1,
-///     system_2,
-/// ).chain().in_set(TestSet::First))
-///
-/// .add_systems(Startup, (
-///     system_3,
-///     system_4,
-/// ).chain().in_set(TestSet::Second))
-///
-/// .configure_sets(Startup, TestSet::First.before(TestSet::Second))
-/// ```
-#[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
-enum TestSet {
-    First,
-    Second,
-}
-
-/// Used to label terminal output for tests into different colors.  Applied colors will tack onto
-/// text until a different color is set.
-///
-/// ## EXAMPLE
-/// ```ignore
-/// println!("{}I am a message!{} Here are some words!", TestColors::PASS, TestColors::RESET);
-/// ```
-/// The words "I am a message!" will be whatever color is associated with PASS, and the string "Here
-/// are some words!" will be whatever color is associated with RESET.
-struct TestColors;
-impl TestColors {
-    const RESET: &'static str = "\x1b[0m";  // \x1b[0m  == WHATEVER THE DEFAULT COLOR IS FOR THE TERMINAL
-    const FAIL:  &'static str = "\x1b[31m"; // \x1b[31m == RED TERMINAL TEXT
-    const PASS:  &'static str = "\x1b[32m"; // \x1b[32m == GREEN TERMINAL TEXT
-    const INFO:  &'static str = "\x1b[33m"; // \x1b[33m == YELLOW TERMINAL TEXT
-}
-
-/// Used for the [`check()`] function to print out a test message for the passed condition.
-fn pass(test: &str) {
-    println!("{}[PASS]{} {}", TestColors::PASS, TestColors::RESET, test);
-}
-
-/// Used for the [`check()`] function to print out a failed message for the passed condition.
-fn fail(test: &str, reason: &str) {
-    println!("{}[FAIL]{} {} — {}", TestColors::FAIL, TestColors::RESET, test, reason);
-}
-
-/// Used to determine if a test failed or passed based on the passed condition.  The supplied
-/// reason is a failure message, not for if the test passed.
-fn check(test: &str, condition: bool, reason: &str) {
-    if condition {
-        pass(test);
-    }
-    else {
-        fail(test, reason);
-    }
-}
-// ############################################################################################### //
 
 // ─── Safety Note ─────────────────────────────────────────────────────────────
 //
@@ -309,36 +242,36 @@ fn test_reset() {
     check("reset::digit of -37 is 7",       t2.get_digit()         == 7,   "expected 7");
 }
 
-/// Verifies that zero_out() sets current_value and digit to 0 without touching start_value.
+/// Verifies that set_to_zero() sets current_value and digit to 0 without touching start_value.
 ///
-/// zero_out() is the method tick() calls internally when the loop point is reached,
+/// set_to_zero() is the method tick() calls internally when the loop point is reached,
 /// so confirming that only current_value and digit are affected — and start_value is
-/// left alone — is important for understanding how looping behaviour works.
-fn test_zero_out() {
+/// left alone — is important for understanding how looping behavior works.
+fn test_set_to_zero() {
     let mut t = Ticker::new(99);
-    t.zero_out();
-    check("zero_out::current_value is 0", t.get_current_value() == 0, "expected 0");
-    check("zero_out::digit is 0",         t.get_digit()         == 0, "expected 0");
+    t.set_to_zero();
+    check("set_to_zero::current_value is 0", t.get_current_value() == 0, "expected 0");
+    check("set_to_zero::digit is 0",         t.get_digit()         == 0, "expected 0");
     // start_value should be unaffected
-    check("zero_out::start_value unchanged", t.get_start_value() == 99, "expected 99");
+    check("set_to_zero::start_value unchanged", t.get_start_value() == 99, "expected 99");
 }
 
-/// Verifies that current_to_min() sets current_value to TICKER_MIN_VALUE (-100) and
+/// Verifies that set_current_to_min() sets current_value to TICKER_MIN_VALUE (-100) and
 /// updates digit to reflect the ones-place of its absolute value (0, since 100 % 10 = 0).
-fn test_current_to_min() {
+fn test_set_current_to_min() {
     let mut t = Ticker::new(50);
-    t.current_to_min();
-    check("current_to_min::current_value is -100", t.get_current_value() == -100, "expected -100");
-    check("current_to_min::digit is 0 (100 % 10)", t.get_digit()         == 0,    "expected 0");
+    t.set_current_to_min();
+    check("set_current_to_min::current_value is -100", t.get_current_value() == -100, "expected -100");
+    check("set_current_to_min::digit is 0 (100 % 10)", t.get_digit()         == 0,    "expected 0");
 }
 
-/// Verifies that current_to_max() sets current_value to TICKER_MAX_VALUE (100) and
+/// Verifies that set_current_to_max() sets current_value to TICKER_MAX_VALUE (100) and
 /// updates digit to reflect the ones-place of its absolute value (0, since 100 % 10 = 0).
-fn test_current_to_max() {
+fn test_set_current_to_max() {
     let mut t = Ticker::new(0);
-    t.current_to_max();
-    check("current_to_max::current_value is 100", t.get_current_value() == 100, "expected 100");
-    check("current_to_max::digit is 0 (100 % 10)", t.get_digit()        == 0,   "expected 0");
+    t.set_current_to_max();
+    check("set_current_to_max::current_value is 100", t.get_current_value() == 100, "expected 100");
+    check("set_current_to_max::digit is 0 (100 % 10)", t.get_digit()        == 0,   "expected 0");
 }
 
 /// Verifies the three comparison methods against all three possible relationships

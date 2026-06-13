@@ -1478,6 +1478,7 @@ name = "bevy_time_structures"
 version = "0.2.0"
 dependencies = [
  "bevy",
+ "mirth_engine_testing_tools",
 ]
 
 [[package]]
@@ -3250,6 +3251,15 @@ checksum = "1fa76a2c86f704bdb222d66965fb3d63269ce38518b83cb0575fca855ebb6316"
 dependencies = [
  "adler2",
  "simd-adler32",
+]
+
+[[package]]
+name = "mirth_engine_testing_tools"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "736861e6d188af146b86ffaf074de5f1879105515304a41b3c1459f4e5346f6f"
+dependencies = [
+ "bevy",
 ]
 
 [[package]]
