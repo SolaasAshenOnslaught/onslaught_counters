@@ -1,12 +1,23 @@
 
 // Imports
+use bevy::prelude::*;
 use std::fmt::Display;
 use std::ops::{Add, AddAssign, Div, Rem, RemAssign, Sub, SubAssign};
-use bevy::prelude::*;
 use mirth_engine_testing_tools::{check_if_value_is_within_range};
 
-// ############################################################################################## //
 // ####################################### VALUE TRAIT ########################################## //
+/// Used to apply a generic to the start_value, current_value, and end_value within the Ticker type.
+///
+/// Supports i8, i16, i32 for start_value, current_value, and end_value within Ticker.  Memory size
+/// for the Ticker values is adjustable due to this trait.  9 times out of 10 you'll likely just need
+/// i8 tickers.
+///
+/// # IMPORTANT
+/// The MIN and MAX declarations are present to help avoid absolute errors on integer ranges.  MAX isn't
+/// really impacted by this, it's declared for readability purposes.  But MIN's assignment on value types
+/// will always add 1 to an integer's minimum to avoid things like -128 in the i8 datatype becoming 128
+/// after .absolute() is applied to a value.  We have to do this since 128 is outside the i8 range;
+/// 127 is the max for i8.
 pub trait TickerValue:
 Copy                    // TickerValue types are integers, which means they're safe to copy.
 + Ord                   // TickerValue types are integers, hence Ord is necessary for comparison.
@@ -21,61 +32,69 @@ Copy                    // TickerValue types are integers, which means they're s
 {
     const MIN: Self;
     const MAX: Self;
-    fn absolute(self)           -> Self;
-    fn sat_add(self, rhs: Self) -> Self;
-    fn sat_sub(self, rhs: Self) -> Self;
-    fn as_f32(self)             -> f32;
-    fn as_i8(self)              -> i8;
-    fn as_i64(self)             -> i64;
-    fn from_f64(value: f64)     -> Self;
-    fn from_i32(val: i32)       -> Self;
+    fn absolute(self)               -> Self;
+    fn sat_add(self, value: Self)   -> Self;
+    fn sat_sub(self, value: Self)   -> Self;
+    fn as_f32(self)                 -> f32;
+    fn as_i8(self)                  -> i8;
+    fn as_i64(self)                 -> i64;
+    fn from_f64(value: f64)         -> Self;
+    fn from_i32(val: i32)           -> Self;
 }
 
 impl TickerValue for i8 {
-    const MIN: Self             = i8::MIN + 1;
-    const MAX: Self             = i8::MAX;
-    fn absolute(self)           -> Self { self.abs() }
-    fn sat_add(self, rhs: Self) -> Self { self.saturating_add(rhs) }
-    fn sat_sub(self, rhs: Self) -> Self { self.saturating_sub(rhs) }
-    fn as_f32(self)             -> f32  { self as f32 }
-    fn as_i8(self)              -> i8   { self }
-    fn as_i64(self)             -> i64  { self as i64 }
-    fn from_f64(value: f64)     -> Self { value as i8 }
-    fn from_i32(value: i32)     -> Self { value as i8 }
+    const MIN: Self                 = i8::MIN + 1;
+    const MAX: Self                 = i8::MAX;
+    fn absolute(self)               -> Self { self.abs() }
+    fn sat_add(self, value: Self)   -> Self { self.saturating_add(value) }
+    fn sat_sub(self, value: Self)   -> Self { self.saturating_sub(value) }
+    fn as_f32(self)                 -> f32  { self as f32 }
+    fn as_i8(self)                  -> i8   { self }
+    fn as_i64(self)                 -> i64  { self as i64 }
+    fn from_f64(value: f64)         -> Self { value as i8 }
+    fn from_i32(value: i32)         -> Self { value as i8 }
 }
 
 impl TickerValue for i16 {
-    const MIN: Self             = i16::MIN + 1;
-    const MAX: Self             = i16::MAX;
-    fn absolute(self)           -> Self { self.abs() }
-    fn sat_add(self, rhs: Self) -> Self { self.saturating_add(rhs) }
-    fn sat_sub(self, rhs: Self) -> Self { self.saturating_sub(rhs) }
-    fn as_f32(self)             -> f32  { self as f32 }
-    fn as_i8(self)              -> i8   { self as i8 }
-    fn as_i64(self)             -> i64  { self as i64 }
-    fn from_f64(value: f64)     -> Self { value as i16 }
-    fn from_i32(value: i32)     -> Self { value as i16 }
+    const MIN: Self                 = i16::MIN + 1;
+    const MAX: Self                 = i16::MAX;
+    fn absolute(self)               -> Self { self.abs() }
+    fn sat_add(self, value: Self)   -> Self { self.saturating_add(value) }
+    fn sat_sub(self, value: Self)   -> Self { self.saturating_sub(value) }
+    fn as_f32(self)                 -> f32  { self as f32 }
+    fn as_i8(self)                  -> i8   { self as i8 }
+    fn as_i64(self)                 -> i64  { self as i64 }
+    fn from_f64(value: f64)         -> Self { value as i16 }
+    fn from_i32(value: i32)         -> Self { value as i16 }
 }
 
 impl TickerValue for i32 {
-    const MIN: Self             = i32::MIN + 1;
-    const MAX: Self             = i32::MAX;
-    fn absolute(self)           -> Self { self.abs() }
-    fn sat_add(self, rhs: Self) -> Self { self.saturating_add(rhs) }
-    fn sat_sub(self, rhs: Self) -> Self { self.saturating_sub(rhs) }
-    fn as_f32(self)             -> f32  { self as f32 }
-    fn as_i8(self)              -> i8   { self as i8 }
-    fn as_i64(self)             -> i64  { self as i64 }
-    fn from_f64(value: f64)     -> Self { value as i32 }
-    fn from_i32(value: i32)     -> Self { value }
+    const MIN: Self                 = i32::MIN + 1;
+    const MAX: Self                 = i32::MAX;
+    fn absolute(self)               -> Self { self.abs() }
+    fn sat_add(self, value: Self)   -> Self { self.saturating_add(value) }
+    fn sat_sub(self, value: Self)   -> Self { self.saturating_sub(value) }
+    fn as_f32(self)                 -> f32  { self as f32 }
+    fn as_i8(self)                  -> i8   { self as i8 }
+    fn as_i64(self)                 -> i64  { self as i64 }
+    fn from_f64(value: f64)         -> Self { value as i32 }
+    fn from_i32(value: i32)         -> Self { value }
 }
 // ############################################################################################## //
-// ############################################################################################## //
 
 
 
-// ############################################################################################## //
 // ####################################### PRECISION TRAIT ###################################### //
+/// Used to apply a generic to the accrued_delta and interval fields within the Ticker type.
+///
+/// Supports f32 and f64 for accrued_delta and interval fields within Ticker.
+///
+/// # IMPORTANT
+/// Using f64 for Ticker precision will result in more accurate calculations inside the .tick() method.
+/// Useful if accuracy is crucial, otherwise pointless.  In most cases, f64 precision is not necessary.
+/// I'd say the only scenarios where the precision jump becomes important is for big clocks (world clocks)
+/// that can impact many entities, or if PvP is involved in a game and the timing of things should be as
+/// accurate as possible to reduce frustration.
 pub trait TickerPrecision:
 Copy                    // TickerPrecision types are floats, which means they're safe to copy.
 + PartialOrd            // TickerPrecision types are floats, hence PartialOrd is necessary for comparisons.
@@ -101,7 +120,7 @@ impl TickerPrecision for f32 {
     const MIN_POSITIVE: Self                =   f32::MIN_POSITIVE;
     const MAX: Self                         =   f32::MAX;
     fn clamp(self, min: Self, max: Self)    ->  Self { self.clamp(min, max) }
-    fn as_f64(self)                         ->  f64 { self as f64 }
+    fn as_f64(self)                         ->  f64  { self as f64 }
     fn from_f64(value: f64)                 ->  Self { value as f32 }
 }
 
@@ -109,27 +128,16 @@ impl TickerPrecision for f64 {
     const MIN_POSITIVE: Self                =   f64::MIN_POSITIVE;
     const MAX: Self                         =   f64::MAX;
     fn clamp(self, min: Self, max: Self)    ->  Self { self.clamp(min, max) }
-    fn as_f64(self)                         ->  f64 { self }
+    fn as_f64(self)                         ->  f64  { self }
     fn from_f64(value: f64)                 ->  Self { value }
 }
 // ############################################################################################## //
-// ############################################################################################## //
 
 
 
-// ############################################################################################## //
 // ################################# TICKER IMPLEMENTATION ###################################### //
-/// By themselves, tickers can be used to create simple timers.  Although they are best used in conjunction
-/// as an inner element to a greater time structure to create some wicked tickety-tocking.
+/// A generic, self-contained counter that advances a value over time at a fixed interval.
 ///
-/// All fields of Ticker have getters, and only digit has no setter.
-///
-/// # TICKING LOOPS AT [`LOOP_POINT`]
-/// Tickers don't stop ticking.  Once the next tick addition hits [`LOOP_POINT`] it will zero out current_value using to_zero().
-/// **This is crucial to understand.** Not recognizing that ticking loops on these structures will make for poor usage of them.
-/// Tickers are a building block element to making larger time structures or for highly compartmentalized timer usage.
-/// **If you're okay with values from [`i8::MIN`] to [`TICKER_MAX_VALUE`] for your timers, then feel free to go ham with Tickers.**
-/// Otherwise, I recommend the Chronolog structure.
 #[derive(Component, Reflect, Debug)]
 pub struct Ticker<V: TickerValue, P: TickerPrecision> {
     start_value:                V,
@@ -144,6 +152,7 @@ pub struct Ticker<V: TickerValue, P: TickerPrecision> {
 }
 
 impl<V: TickerValue, P: TickerPrecision> Default for Ticker<V, P> {
+    ///
     fn default() -> Self {
         Self {
             start_value:                V::from_i32(0),
@@ -162,7 +171,10 @@ impl<V: TickerValue, P: TickerPrecision> Default for Ticker<V, P> {
 impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     // ##################################### CONSTRUCTORS ######################################## //
+    /// Use this when you need to completely define your own Ticker; full-custom.
     ///
+    /// # Important
+    /// Text
     pub fn new(
         start_value: V,
         current_value: V,
@@ -300,8 +312,6 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     // ##################################### GETTERS ########################################## //
     /// Returns the start_value of a Ticker.
-    ///
-    /// start_value can change through other methods, so don't treat it as a consistent value.
     #[inline]
     pub fn start_value(&self) -> V {
         self.start_value
@@ -314,8 +324,6 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     }
 
     /// Returns the end_value of a Ticker.
-    ///
-    /// end_value can change through other methods, so don't treat it as a consistent value.
     #[inline]
     pub fn end_value(&self) -> V {
         self.end_value
@@ -323,39 +331,70 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Returns the interval of a Ticker.
     ///
-    /// The interval value can change through other methods, so don't treat it as a consistent value.
-    /// Also, it's important to remember that the interval is what dictates how long in seconds that it takes
-    /// for current_value to increase or decrease; direction depends on is_ticking_up.
+    /// # What Exactly is the Interval?
+    /// The interval is what dictates how long in \[INSERT_TIME_UNIT_HERE\] that it takes for current_value to increase
+    /// or decrease by 1; direction depends on is_ticking_up.
+    ///
+    /// # Unit Type of Interval?
+    /// Ticker has no built-in concept of "seconds" or any other unit — interval and accrued_delta
+    /// are just two numbers compared against each other inside .tick(). The unit they represent is
+    /// determined entirely by whatever unit the caller's delta is expressed in.
+    ///
+    /// The ticker_ticking system happens to pass seconds (the difference in time between
+    /// 2 frames, sourced from Bevy's Time resource), so interval and accrued_delta are conventionally seconds when
+    /// using that system. But nothing stops a custom implementation from feeding .tick() a delta
+    /// in any other unit that meaningfully represents change over some interval.  In a custom
+    /// implementation, it could literally be the difference in the number of clowns seen between
+    /// two blinks.
     #[inline]
     pub fn interval(&self) -> P {
         self.interval
     }
 
+    /// Returns the accrued_delta of a Ticker.
     ///
+    /// # When Should I Use This Method?
+    /// Realistically speaking, this method has limited use in most cases — accrued_delta holds
+    /// only the leftover remainder from the last call to .tick(), not the total elapsed time
+    /// since the Ticker was created or last reset.  It exists mainly for debugging, logging, or
+    /// custom structures that need to inspect or manually carry over a Ticker's in-progress
+    /// timing state.
+    ///
+    /// # Unit Type of Accrued Delta?
+    /// Ticker has no built-in concept of "seconds" or any other unit — interval and accrued_delta
+    /// are just two numbers compared against each other inside .tick(). The unit they represent is
+    /// determined entirely by whatever unit the caller's delta is expressed in.
+    ///
+    /// The ticker_ticking system happens to pass seconds (the difference in time between
+    /// 2 frames, sourced from Bevy's Time resource), so interval and accrued_delta are conventionally seconds when
+    /// using that system. But nothing stops a custom implementation from feeding .tick() a delta
+    /// in any other unit that meaningfully represents change over some interval.  In a custom
+    /// implementation, it could literally be the difference in the number of clowns seen between
+    /// two blinks.
     #[inline]
     pub fn accrued_delta(&self) -> P {
         self.accrued_delta
     }
 
-    ///
+    /// Returns the paused state of a Ticker.
     #[inline]
     pub fn is_paused(&self) -> bool {
         self.is_paused
     }
 
-    ///
+    /// Returns whether or not a Ticker is set to loop upon reaching either `start_value` or `end_value`.
     #[inline]
     pub fn is_looping(&self) -> bool {
         self.is_looping
     }
 
-    ///
+    /// Returns whether or not a Ticker is set to count its `current_value` up or down.
     #[inline]
     pub fn is_ticking_up(&self) -> bool {
         self.is_ticking_up
     }
 
-    ///
+    /// Returns whether or not a Ticker is set to handle frame spikes in its .tick() method.
     #[inline]
     pub fn is_handling_frame_spikes(&self) -> bool {
         self.is_handling_frame_spikes
@@ -366,6 +405,10 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     // ##################################### SETTERS ########################################## //
     /// Changes `start_value` to the passed value.
+    ///
+    /// # Important
+    /// `start_value` can NOT go out of the range of `V::MIN` to `V::MAX`.
+    /// Attempting to set `start_value` outside the range will cause it to be clamped down.
     #[inline]
     pub fn set_start_value(&mut self, value: V) {
         self.start_value = value.clamp(V::MIN, V::MAX);
@@ -373,6 +416,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Changes `current_value` to the passed value.
     ///
+    /// # Important
     /// `current_value` can NOT go out of the range that `start_value` and `end_value` create.
     /// Attempting to set `current_value` outside the range will cause it to be clamped down.
     pub fn set_current_value(&mut self, value: V) {
@@ -382,6 +426,10 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     }
 
     /// Changes `end_value` to the passed value.
+    ///
+    /// # Important
+    /// `end_value` can NOT go out of the range of `V::MIN` to `V::MAX`.
+    /// Attempting to set `end_value` outside the range will cause it to be clamped down.
     #[inline]
     pub fn set_end_value(&mut self, value: V) {
         self.end_value = value.clamp(V::MIN, V::MAX);
@@ -389,7 +437,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Pauses a ticker's ticking.
     ///
-    /// This prevents the .tick method from doing any calculations.
+    /// This prevents the .tick() method from doing any calculations.
     #[inline]
     pub fn pause(&mut self) {
         self.is_paused = true;
@@ -397,19 +445,22 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Unpauses a ticker's ticking.
     ///
-    /// This allows the .tick method to resume its calculations.
+    /// This allows the .tick() method to resume its calculations.
     #[inline]
     pub fn unpause(&mut self) {
         self.is_paused = false;
     }
 
+    /// Sets a ticker to loop its counting when `current_value` reaches either `start_value` or `end_value`.
     ///
+    /// # Important
+    /// Triggering a loop will mean for `current_value` to be set to `start_value`.
     #[inline]
     pub fn start_looping(&mut self) {
         self.is_looping = true;
     }
 
-    ///
+    /// Prevents a ticker from looping when `current_value` reaches either `start_value` or `end_value`.
     #[inline]
     pub fn stop_looping(&mut self) {
         self.is_looping = false;
@@ -417,7 +468,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Causes the ticker's current_value to count up.
     ///
-    /// Will allow calculated ticks inside the .tick method to add to current_value, rather than subtract.
+    /// Will allow calculated ticks inside the .tick() method to add to current_value, rather than subtract.
     #[inline]
     pub fn tick_up(&mut self) {
         self.is_ticking_up = true;
@@ -425,7 +476,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Causes the ticker's current_value to count down.
     ///
-    /// Will allow calculated ticks inside the .tick method to subtract from current_value, rather than add.
+    /// Will allow calculated ticks inside the .tick() method to subtract from current_value, rather than add.
     #[inline]
     pub fn tick_down(&mut self) {
         self.is_ticking_up = false;
@@ -448,12 +499,20 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     // ################################### EQUAL METHODS ###################################### //
     /// Returns true if the current_value and the start_value are equal to one another, false otherwise.
+    ///
+    /// # When Should I Use This Method?
+    /// Use this method in onetime tickers that count to start_value if you want to determine if the
+    /// onetime ticker is finished.
     #[inline]
     pub fn is_current_equal_to_start(&self) -> bool {
         self.current_value == self.start_value
     }
 
     /// Returns true if the current_value and the end_value are equal to one another, false otherwise.
+    ///
+    /// # When Should I Use This Method?
+    /// Use this method in onetime tickers that count to end_value if you want to determine if the
+    /// onetime ticker is finished.
     #[inline]
     pub fn is_current_equal_to_end(&self) -> bool {
         self.current_value == self.end_value
@@ -461,6 +520,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Returns true if the start_value and the end_value are equal to one another, false otherwise.
     ///
+    /// # Why Does This Method Exist?
     /// start_value and end_value can equal one another since their values can be changed or set to
     /// the same value at the creation of a Ticker instance.
     #[inline]
@@ -474,7 +534,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     // ################################# DIFFERENCE METHODS ################################### //
     /// Returns the difference between current_value and start_value.
     ///
-    /// Will only return positive numbers.
+    /// Will only return positive numbers, including 0.
     pub fn difference_from_start(&self) -> i64 {
         let min: i64 = self.current_value.min(self.start_value).as_i64();
         let max: i64 = self.current_value.max(self.start_value).as_i64();
@@ -483,7 +543,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Returns the difference between current_value and end_value.
     ///
-    /// Will only return positive numbers.
+    /// Will only return positive numbers, including 0.
     pub fn difference_from_end(&self) -> i64 {
         let min: i64 = self.current_value.min(self.end_value).as_i64();
         let max: i64 = self.current_value.max(self.end_value).as_i64();
@@ -492,7 +552,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Returns the difference between start_value and end_value.
     ///
-    /// Will only return positive numbers.
+    /// Will only return positive numbers, including 0.
     pub fn difference_from_start_to_end(&self) -> i64 {
         let min: i64 = self.start_value.min(self.end_value).as_i64();
         let max: i64 = self.start_value.max(self.end_value).as_i64();
@@ -508,12 +568,12 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Will always return a positive value.
     ///
     /// #### Small Note
-    /// It is not possible for the ones digit to be dropped, hence the reason why this method has no
+    /// It is NOT possible for the ones digit to be dropped, hence the reason why this method has no
     /// "with_drop_accounting" version - there is always a ones-place.
     ///
     /// #### No Conditional in Implementation?
-    /// This digit does not need to check current_value since all integer types can contain at least
-    /// 3 digits.  0 will still be returned if the digit isn't being used.
+    /// This digit method does not need to check if current_value is holding a value that contains this digit
+    /// since all integer types can contain at least 3 digits.  0 will still be returned if the digit isn't being used.
     #[inline]
     pub fn digit_1(&self) -> i8 {
         (self.current_value.absolute() % V::from_i32(10)).as_i8()
@@ -526,8 +586,8 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Will return a 0 if the digit doesn't exist.
     ///
     /// #### No Conditional in Implementation?
-    /// This digit does not need to check current_value since all integer types can contain at least
-    /// 3 digits.  0 will still be returned if the digit isn't being used.
+    /// This digit method does not need to check if current_value is holding a value that contains this digit
+    /// since all integer types can contain at least 3 digits.  0 will still be returned if the digit isn't being used.
     #[inline]
     pub fn digit_2(&self) -> i8 {
         ((self.current_value.absolute() / V::from_i32(10)) % V::from_i32(10)).as_i8()
@@ -540,8 +600,8 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Will return a 0 if the digit doesn't exist.
     ///
     /// #### No Conditional in Implementation?
-    /// This digit does not need to check current_value since all integer types can contain at least
-    /// 3 digits.  0 will still be returned if the digit isn't being used.
+    /// This digit method does not need to check if current_value is holding a value that contains this digit
+    /// since all integer types can contain at least 3 digits.  0 will still be returned if the digit isn't being used.
     #[inline]
     pub fn digit_3(&self) -> i8 {
         ((self.current_value.absolute() / V::from_i32(100)) % V::from_i32(10)).as_i8()
@@ -978,25 +1038,18 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Will set the current_value to be equal to the start_value and zero out the accrued_delta.
     ///
-    /// Best to use when you want to completely wipe whatever has been accumulated.
+    /// # When To Use This Over Reset?
+    /// Best to use when you want to completely wipe whatever has been accumulated, including the
+    /// timing state.  If you need to carry over the timing state (the remainder in the last tick
+    /// calculation), then do NOT use this.
     #[inline]
     pub fn hard_reset(&mut self) {
         self.current_value = self.start_value;
         self.accrued_delta = P::from_f64(0.0);
     }
 
-    /// Used to advance a ticker.  Takes in a time.delta() call off the time resource (Res<Time>) that Bevy provides.
     ///
-    /// If you're making a custom ticking system and have stripped out the ticking systems provided
-    /// in the systems of this plugin, then please note that you must run this each frame for time to move normally.
-    ///
-    /// # TICKING LOOPS AT [`LOOP_POINT`]
-    /// Tickers don't stop ticking.  Once the next tick addition hits [`LOOP_POINT`] it will zero out current_value.
-    /// **This is crucial to understand.** Not recognizing that ticking loops on these structures will make for poor usage of them.
-    /// Tickers are a building block element to making larger time structures or for highly compartmentalized timer usage.
-    /// **If you're okay with values from [`TICKER_MIN_VALUE`] to [`TICKER_MAX_VALUE`] for your timers, then feel free to go ham with Tickers.**
-    /// Otherwise, I recommend the Chronolog structure.
-    pub fn tick(&mut self, any_delta_in_seconds: P) {
+    pub fn tick(&mut self, delta: P) {
 
         // PAUSE STATUS
         // If paused, go no further as we don't need to calculate the new current_value since the Ticker is frozen.
@@ -1006,14 +1059,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
         // DELTA ACCUMULATION
         // Add to the accrued delta so that we can later determine if we've gone over the interval value and need to fire another tick.
-        self.accrued_delta += any_delta_in_seconds;
+        self.accrued_delta += delta;
 
-        // TICK COLLECTION (TC)
+        // TICK COLLECTION
         // Acquiring the amount of tick fires that occurred within the given frame based on if
         // the Ticker is set to handle frame spikes.
         let ticks = match self.is_handling_frame_spikes {
 
-            // TC FOR HANDLING FRAME SPIKES
+            // TICK COLLECTION WHEN HANDLING FRAME SPIKES
             // When frame spike handling is active, all ticks that accumulated during a large
             // delta are collected at once.  The remainder after division is kept in accrued_delta
             // so that partial progress toward the next tick is not lost between frames.
@@ -1029,7 +1082,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
                 tick_count_truncated_to_value_type
             },
 
-            // TC FOR ~NOT~ HANDLING FRAME SPIKES
+            // TICK COLLECTION WHEN ~NOT~ HANDLING FRAME SPIKES
             // When frame spike handling is inactive, only one tick is allowed to fire per call
             // regardless of how large the delta was.  One interval is subtracted from accrued_delta
             // rather than resetting to zero so that the timer remains accurate over time — any
@@ -1086,5 +1139,4 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         }
     }
 }
-// ############################################################################################## //
 // ############################################################################################## //

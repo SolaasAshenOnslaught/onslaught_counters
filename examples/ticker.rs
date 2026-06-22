@@ -2,13 +2,13 @@
 // Imports
 use bevy::prelude::*;
 use mirth_engine_testing_tools::{check_condition, TestColors, TestSet};
-use bevy_time_structures::{Ticker, TimeStructures};
+use bevy_time_structures::{Ticker, Tickers};
 
 fn main() {
     App::new()
 
         .add_plugins(DefaultPlugins)
-        .add_plugins(TimeStructures{})
+        .add_plugins(Tickers{})
 
         // One and done tests that are NOT intended to panic.
         .add_systems(Startup, (
@@ -57,7 +57,6 @@ fn main() {
         ).chain().in_set(TestSet::Set2))
 
         // Tests that occur on every frame.
-        // IMPORTANT: Comment this block out to prevent these tests.
         .add_systems(Update, (
             // test_update_ticker_advances_forward,
             // test_update_ticker_stays_within_range,

@@ -2,8 +2,8 @@
 name = "bevy_time_structures"
 version = "0.2.0"
 edition = "2024"
-description = "A Bevy plugin that makes use of Timers to create more intuitive trackers dubbed as Chronologs and Tickers.  Chronologs support countdown functionality, getting digits inside a tracker, and account for frame spiking.  Tickers are purposed for users to be able to customize their own time structures; they are used to support Chronolog implementation."
-license = "Apache-2.0"
+description = "A Bevy plugin with types (and their systems) purposed for tracking continously changing values over a given period of time."
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 bevy = "0.18.1"

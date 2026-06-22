@@ -4,10 +4,11 @@ use bevy::prelude::*;
 use crate::types::*;
 use crate::systems::*;
 
-/// Structure that acts as the main plugin for all of the time structures, adding this
-/// as a plugin would implement the various timer structure definitions and Bevy systems.
-pub struct TimeStructures {}
-impl Plugin for TimeStructures {
+/// A structure that acts as the main plugin for all the types and systems of the mirth_engine_tickers package.
+/// Will enable types and systems within the package depending on which features have been enabled
+/// using the "cargo --features" command.
+pub struct Tickers {}
+impl Plugin for Tickers {
     fn build(&self, app: &mut App) {
 
         // ############################### TICKER FEATURES ###################################### //
@@ -32,34 +33,30 @@ impl Plugin for TimeStructures {
 
         // Systems
         #[cfg(feature = "ticker_systems_i8_f32")]
-        app.add_systems(First, ticker_ticking::<i8, f32>);
+        app.add_systems(First, tick_tickers::<i8, f32>);
 
         #[cfg(feature = "ticker_systems_i16_f32")]
-        app.add_systems(First, ticker_ticking::<i16, f32>);
+        app.add_systems(First, tick_tickers::<i16, f32>);
 
         #[cfg(feature = "ticker_systems_i32_f32")]
-        app.add_systems(First, ticker_ticking::<i32, f32>);
+        app.add_systems(First, tick_tickers::<i32, f32>);
 
         #[cfg(feature = "ticker_systems_i8_f64")]
-        app.add_systems(First, ticker_ticking::<i8, f64>);
+        app.add_systems(First, tick_tickers::<i8, f64>);
 
         #[cfg(feature = "ticker_systems_i16_f64")]
-        app.add_systems(First, ticker_ticking::<i16, f64>);
+        app.add_systems(First, tick_tickers::<i16, f64>);
 
         #[cfg(feature = "ticker_systems_i32_f64")]
-        app.add_systems(First, ticker_ticking::<i32, f64>);
+        app.add_systems(First, tick_tickers::<i32, f64>);
         // ###################################################################################### //
 
 
 
-        // ############################### CHRONOLOG FEATURES ################################### //
+        // ############################### TICKERLOG FEATURES ################################### //
         // Types
 
         // Systems
-
         // ###################################################################################### //
-        // Text
-        // app.register_type::<Chronolog>();
-        // app.add_systems(First, chronolog_ticking);
     }
 }
