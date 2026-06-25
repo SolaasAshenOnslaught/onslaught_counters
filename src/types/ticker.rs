@@ -1,4 +1,4 @@
-
+use std::cmp::PartialEq;
 // Imports
 use bevy::prelude::*;
 use std::fmt::Display;
@@ -137,13 +137,13 @@ impl TickerPrecision for f64 {
 // ############################################################################################## //
 
 /// ADD SHTUFFF HERE!
-#[derive(Reflect, Debug)]
+#[derive(PartialEq, Reflect, Debug)]
 pub enum TickerForms {
     Looper,
     MutLooper,
     Oneshot,
     MutOneshot,
-    MutWayfarer,  // Someone who has a destination but may not stick around; doesn't mind jumping around during their travels or after they've reached their destination.
+    Freezing,
 }
 
 // ################################# TICKER IMPLEMENTATION ###################################### //
@@ -326,7 +326,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
 
     ///
-    pub fn new_mut_wayfarer(
+    pub fn new_freezing(
         starting_value:             V,
         end_value:                  V,
         time_interval:              P,
@@ -347,7 +347,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
             is_paused:                  false,
             is_ticking_up,
             is_handling_time_spikes,
-            form:                       TickerForms::MutWayfarer,
+            form:                       TickerForms::Freezing,
         }
     }
     // ######################################################################################## //
@@ -470,9 +470,19 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// # Important
     /// `start_value` can NOT go out of the range of `V::MIN` to `V::MAX`.
     /// Attempting to set `start_value` outside the range will cause it to be clamped down.
-    #[inline]
     pub fn set_start_value(&mut self, value: V) {
-        self.start_value = value.clamp(V::MIN, V::MAX);
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.start_value = value.clamp(V::MIN, V::MAX);
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.start_value = value.clamp(V::MIN, V::MAX);
+                }
+            }
+            _ => {}
+        }
     }
 
     /// Changes `current_value` to the passed value.
@@ -481,9 +491,22 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// `current_value` can NOT go out of the range that `start_value` and `end_value` create.
     /// Attempting to set `current_value` outside the range will cause it to be clamped down.
     pub fn set_current_value(&mut self, value: V) {
-        let min = self.start_value.min(self.end_value);
-        let max = self.start_value.max(self.end_value);
-        self.current_value = value.clamp(min, max);
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                let min = self.start_value.min(self.end_value);
+                let max = self.start_value.max(self.end_value);
+                self.current_value = value.clamp(min, max);
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    let min = self.start_value.min(self.end_value);
+                    let max = self.start_value.max(self.end_value);
+                    self.current_value = value.clamp(min, max);
+                }
+            }
+            _ => {}
+        }
     }
 
     /// Changes `end_value` to the passed value.
@@ -491,59 +514,130 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// # Important
     /// `end_value` can NOT go out of the range of `V::MIN` to `V::MAX`.
     /// Attempting to set `end_value` outside the range will cause it to be clamped down.
-    #[inline]
     pub fn set_end_value(&mut self, value: V) {
-        self.end_value = value.clamp(V::MIN, V::MAX);
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.end_value = value.clamp(V::MIN, V::MAX);
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.end_value = value.clamp(V::MIN, V::MAX);
+                }
+            }
+            _ => {}
+        }
     }
 
     /// Pauses a ticker's ticking.
     ///
     /// This prevents the .tick() method from doing any calculations.
-    #[inline]
     pub fn pause(&mut self) {
-        self.is_paused = true;
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.is_paused = true;
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.is_paused = true;
+                }
+            }
+            _ => {}
+        }
     }
 
     /// Unpauses a ticker's ticking.
     ///
     /// This allows the .tick() method to resume its calculations.
-    #[inline]
     pub fn unpause(&mut self) {
-        self.is_paused = false;
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.is_paused = false;
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.is_paused = false;
+                }
+            }
+            _ => {}
+        }
     }
 
     /// Causes the ticker's current_value to count up.
     ///
     /// Will allow calculated ticks inside the .tick() method to add to current_value, rather than subtract.
-    #[inline]
     pub fn tick_up(&mut self) {
-        self.is_ticking_up = true;
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.is_ticking_up = true;
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.is_ticking_up = true;
+                }
+            }
+            _ => {}
+        }
     }
 
     /// Causes the ticker's current_value to count down.
     ///
     /// Will allow calculated ticks inside the .tick() method to subtract from current_value, rather than add.
-    #[inline]
     pub fn tick_down(&mut self) {
-        self.is_ticking_up = false;
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.is_ticking_up = false;
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.is_ticking_up = false;
+                }
+            }
+            _ => {}
+        }
     }
 
     ///
-    #[inline]
     pub fn start_handling_time_spikes(&mut self) {
-        self.is_handling_time_spikes = true;
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.is_handling_time_spikes = true;
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.is_handling_time_spikes = true;
+                }
+            }
+            _ => {}
+        }
     }
 
     ///
-    #[inline]
     pub fn stop_handling_time_spikes(&mut self) {
-        self.is_handling_time_spikes = false;
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.is_handling_time_spikes = false;
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.is_handling_time_spikes = false;
+                }
+            }
+            _ => {}
+        }
     }
 
     /// ADD MORE TO THIS DOC COMMENT
     ///
     /// #### Important
-    /// Can be used to stop looping by switching the form to wayfarer or oneshot variants.
+    /// Can be used to stop looping by switching the form from looper to MutOneshot or oneshot variants.
+    /// Can be used to switch from immutable forms to mutable ones.
     #[inline]
     pub fn set_form(&mut self, new_form: TickerForms) {
         self.form = new_form;
@@ -559,7 +653,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use this method in oneshot tickers that count to start_value if you want to determine if the
     /// oneshot ticker is finished.
     #[inline]
-    pub fn is_current_equal_to_start(&self) -> bool {
+    pub fn is_current_at_start(&self) -> bool {
         self.current_value == self.start_value
     }
 
@@ -569,7 +663,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use this method in oneshot tickers that count to end_value if you want to determine if the
     /// oneshot ticker is finished.
     #[inline]
-    pub fn is_current_equal_to_end(&self) -> bool {
+    pub fn is_current_at_end(&self) -> bool {
         self.current_value == self.end_value
     }
 
@@ -584,7 +678,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// and you need something to check when they have finally met one another.  It is possible to tighten
     /// the bounds by constantly setting `start_value` and `end_value` to new numbers.
     #[inline]
-    pub fn is_start_equal_to_end(&self) -> bool {
+    pub fn is_start_at_end(&self) -> bool {
         self.start_value == self.end_value
     }
     // ######################################################################################## //
@@ -980,26 +1074,59 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Adds to the start_value of the ticker by the passed value.  Can take in negatives for subtraction.
     ///
     /// Will not let the result of summing cause overflow or wrapping; results will always be within `V::MIN` to `V::MAX` (inclusive).
-    #[inline]
     pub fn add_to_start_value(&mut self, value: V) {
-        self.start_value = self.start_value.sat_add(value).clamp(V::MIN, V::MAX);
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.start_value = self.start_value.sat_add(value).clamp(V::MIN, V::MAX);
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.start_value = self.start_value.sat_add(value).clamp(V::MIN, V::MAX);
+                }
+            }
+            _ => {}
+        }
     }
 
     /// Adds to the current_value of the ticker by the passed value.  Can take in negatives for subtraction.
     ///
     /// Will not let the result of summing cause overflow or wrapping; results will always be within `start_value` to `end_value` (inclusive).
     pub fn add_to_current_value(&mut self, value: V) {
-        let min = self.start_value.min(self.end_value);
-        let max = self.start_value.max(self.end_value);
-        self.current_value = self.current_value.sat_add(value).clamp(min, max);
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                let min = self.start_value.min(self.end_value);
+                let max = self.start_value.max(self.end_value);
+                self.current_value = self.current_value.sat_add(value).clamp(min, max);
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    let min = self.start_value.min(self.end_value);
+                    let max = self.start_value.max(self.end_value);
+                    self.current_value = self.current_value.sat_add(value).clamp(min, max);
+                }
+            }
+            _ => {}
+        }
     }
 
     /// Adds to the end_value of the ticker by the passed value.  Can take in negatives for subtraction.
     ///
     /// Will not let the result of summing cause overflow or wrapping; results will always be within `V::MIN` to `V::MAX` (inclusive).
-    #[inline]
     pub fn add_to_end_value(&mut self, value: V) {
-        self.end_value = self.end_value.sat_add(value).clamp(V::MIN, V::MAX);
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.end_value = self.end_value.sat_add(value).clamp(V::MIN, V::MAX);
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.end_value = self.end_value.sat_add(value).clamp(V::MIN, V::MAX);
+                }
+            }
+            _ => {}
+        }
     }
 
     /// Adds to the time_interval of the ticker by the passed value.  Can take in negatives for subtraction.
@@ -1012,9 +1139,19 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// No. If your goal is to slow time or slow an accumulation to the point that it reverses it,
     /// I suggest you flip the tick direction using .tick_up() or .tick_down() at a specific current_value or
     /// after the rate of slow/speed you're applying has hit a specific value.
-    #[inline]
     pub fn add_to_time_interval(&mut self, value: P) {
-        self.time_interval = (self.time_interval + value).clamp(P::MIN_POSITIVE, P::MAX);
+        match self.form {
+            TickerForms::MutLooper |
+            TickerForms::MutOneshot => {
+                self.time_interval = (self.time_interval + value).clamp(P::MIN_POSITIVE, P::MAX);
+            }
+            TickerForms::Freezing => {
+                if self.current_value != self.end_value {
+                    self.time_interval = (self.time_interval + value).clamp(P::MIN_POSITIVE, P::MAX);
+                }
+            }
+            _ => {}
+        }
     }
     // ######################################################################################## //
 
@@ -1140,7 +1277,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///     - **False** : As long as stored_time is greater than or equal to the time_interval, current_value will change by 1.
     ///
     /// #### Does This Method Impact a Ticker's Units?
-    /// Yes, the units for a Ticker's integers and float fields are based on what is passed into the
+    /// Yes.  The units for a Ticker's integers and float fields are based on what is passed into the
     /// .tick() method.  If the passed value represents the difference in seconds between 2 frames,
     /// the Ticker's time_interval and stored_time units would be seconds; the start_value,
     /// current_value, and end_value would also have seconds as their unit.
@@ -1168,21 +1305,22 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// 8. Voila. .tick() call is complete.
     pub fn tick(&mut self, elapsed_time_between_events: P) {
 
-        // PAUSE STATUS
+        // POTENTIAL RETURN: Ticker is Paused
         // If paused, go no further as we don't need to calculate the new current_value since the Ticker is frozen.
         if self.is_paused {
             return;
         }
 
-        // DELTA ACCUMULATION
+        // TIME ACCUMULATION
         // Add to the stored_time so that we can later determine if we've gone over the time_interval value and need to fire another tick.
         self.stored_time += elapsed_time_between_events;
 
-        // TICK COLLECTION
-        // Acquiring the magnitude of time that passed between events
+        // DETERMINING PASSED TIME
+        // Acquiring the magnitude of time that passed between events.
+        // How this is done is dependent on whether is_handling_time_spikes is set to true or false.
         let magnitude_of_time_that_passed = match self.is_handling_time_spikes {
 
-            // TICK COLLECTION WHEN HANDLING TIME SPIKES
+            // PASSED TIME WHEN HANDLING TIME SPIKES
             // When time spike handling is active, all magnitude_of_time_that_passed that accumulated during a large
             // elapsed_time_between_events are collected at once.  The remainder after division is kept in stored_time
             // so that partial progress toward the next tick is not lost between the events that are
@@ -1199,7 +1337,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
                 magnitude_of_time_that_passed_truncated_to_value_type
             },
 
-            // TICK COLLECTION WHEN ~NOT~ HANDLING TIME SPIKES
+            // PASSED TIME WHEN ~NOT~ HANDLING TIME SPIKES
             // When time spike handling is inactive, only 1 tick is allowed to fire per call
             // regardless of how large the elapsed_time_between_events was.  One time_interval is subtracted from stored_time
             // rather than resetting to zero so that the timer remains accurate over time — any
@@ -1246,23 +1384,32 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
             let max = self.start_value.max(self.end_value);
 
             // RESET DETERMINATION + CURRENT_VALUE ASSIGNMENT
-            // Will change current_value's assignment using new_value based on if the Ticker is set to loop or not.
-            match self.is_looping {
+            // Will change current_value's assignment using new_value based on the Ticker form.
+            match self.form {
 
-                // LOOPING IS ACTIVE
+                // LOOPER LOGIC
                 // Assign current_value to its new host and then reset it to the Ticker's start_value
-                // if either of its boundaries -- start_value and end_value -- are hit.
-                true => {
+                // if either of its boundaries - start_value and end_value - are hit.
+                TickerForms::Looper |
+                TickerForms::MutLooper => {
                     self.current_value = new_value;
                     if self.current_value <= min || self.current_value >= max {
-                        self.reset();
+                        self.current_value = self.start_value;
                     }
                 },
 
-                // LOOPING IS INACTIVE
+                // ONESHOT + FREEZING LOGIC
                 // current_value can assume its new host after new_value has been clamped to the allowed range.
-                false => {
+                // Additionally, stored_time will be zeroed out if current_value hits end_value.  We
+                // do this stored_time wipe since oneshotters and freezings are purposed to clear their
+                // time storage upon hitting their end destination.
+                TickerForms::Oneshot |
+                TickerForms::MutOneshot |
+                TickerForms::Freezing => {
                     self.current_value = new_value.clamp(min, max);
+                    if self.current_value == self.end_value {
+                        self.stored_time = P::from_f64(0.0);
+                    }
                 },
             };
         }
