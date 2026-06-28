@@ -1,7 +1,6 @@
 
 // Imports
 use bevy::prelude::*;
-use std::cmp::PartialEq;
 use std::fmt::Display;
 use std::ops::{Add, AddAssign, Div, Rem, RemAssign, Sub, SubAssign};
 use mirth_engine_testing_tools::{check_if_value_is_within_range};
@@ -23,9 +22,9 @@ Copy                    // TickerValue types are integers, which means they're s
 + Sub<Output = Self>
 + Div<Output = Self>
 + Rem<Output = Self>
-+ Send                  // BEVY REQUIREMENT: For querying to recognize the V generic.
-+ Sync                  // BEVY REQUIREMENT: For querying to recognize the V generic.
-+ 'static               // BEVY REQUIREMENT: TickerValue types are integers, values are valid at all times.
++ Send                  // Needed for Bevy queries; also lets Tickers move safely across threads.
++ Sync                  // Needed for Bevy queries; also lets Tickers be shared safely across threads.
++ 'static               // Needed for Bevy queries; also enforces that TickerValue types own their data, with no borrowed lifetimes.
 {
     const MIN: Self;
     const MAX: Self;
@@ -105,9 +104,9 @@ Copy                    // TickerPrecision types are floats, which means they're
 + AddAssign
 + SubAssign
 + RemAssign
-+ Send                  // BEVY REQUIREMENT: For querying to recognize the P generic.
-+ Sync                  // BEVY REQUIREMENT: For querying to recognize the P generic.
-+ 'static               // BEVY REQUIREMENT: TickerPrecision types are floats, values are valid at all times.
++ Send                  // Needed for Bevy queries; also lets Tickers move safely across threads.
++ Sync                  // Needed for Bevy queries; also lets Tickers be shared safely across threads.
++ 'static               // Needed for Bevy queries; also enforces that TickerPrecision types own their data, with no borrowed lifetimes.
 {
     const MIN_POSITIVE: Self;
     const MAX: Self;
@@ -139,25 +138,26 @@ impl TickerPrecision for f64 {
 /// Provides tickers with a variety of different behaviors.  Here is each behavior explained:
 ///
 /// - **`Looper`**
-///     - The ticker is **immutable** and will loop when `current_value` hits either `start_value` or `end_value`.  When a loop triggers, `current_value` is reset back to `start_value`.
+///     - The ticker is **immutable** and will loop when current_value hits either start_value or end_value.  When a loop triggers, current_value is reset back to start_value.
 ///
 ///
 /// - **`MutLooper`**
-///     - The ticker is **mutable** and will loop when `current_value` hits either `start_value` or `end_value`.  When a loop triggers, `current_value` is reset back to `start_value`.
+///     - The ticker is **mutable** and will loop when current_value hits either start_value or end_value.  When a loop triggers, current_value is reset back to start_value.
 ///
 ///
 /// - **`Oneshot`**
-///     - The ticker is **immutable** and will assign `current_value` to a boundary's value if `current_value` were to hit `start_value` or `end_value`; start and end values are the boundaries.
-///     - The ticker's `stored_time` is set to 0.0 when `current_value` hits `end_value`.  This ensures the time state is completely reset once it reaches the end.
+///     - The ticker is **immutable** and will assign current_value to a boundary's value if current_value were to hit start_value or end_value; start and end values are the boundaries.
+///     - The ticker's stored_time is set to 0.0 when current_value hits end_value.  This ensures the time state is completely reset once it reaches the end.
 ///
 ///
 /// - **`MutOneshot`**
-///     - The ticker is **mutable** and will assign `current_value` to a boundary's value if `current_value` were to hit `start_value` or `end_value`; start and end values are the boundaries.
-///     - The ticker's `stored_time` is set to 0.0 when `current_value` hits `end_value`.  This ensures the time state is completely reset once it reaches the end.
+///     - The ticker is **mutable** and will assign current_value to a boundary's value if current_value were to hit start_value or end_value; start and end values are the boundaries.
+///     - The ticker's stored_time is set to 0.0 when current_value hits end_value.  This ensures the time state is completely reset once it reaches the end.
+///
 ///
 /// - **`Freezing`**
-///     - The ticker begins **mutable**, but it will become **immutable** once `current_value` hits `end_value`.
-///     - The ticker's `stored_time` is set to 0.0 when `current_value` hits `end_value`.  This ensures the time state is completely reset once it reaches the end.
+///     - The ticker begins **mutable**, but it will become **immutable** once current_value hits end_value.
+///     - The ticker's stored_time is set to 0.0 when current_value hits end_value.  This ensures the time state is completely reset once it reaches the end.
 #[derive(PartialEq, Reflect, Debug)]
 pub enum TickerBehaviors {
     Looper,
@@ -171,9 +171,140 @@ pub enum TickerBehaviors {
 
 
 
-/// A generic, self-contained counter that advances a value over time at a fixed time_interval.
+/// #### What Is A Ticker?
+/// In short, a ticker is a type used to track the time between events.
 ///
-/// MAKE SURE TO EXPLAIN TIME IN VARIOUS WAYS, DON'T JUST USE FRAMES!  USE THE CLOWNS OVER BLINKS EXAMPLE!
+/// In long, a ticker is a self-contained counter that advances a value (current_value) between two boundaries
+/// (start_value and end_value) at a fixed rate, driven by however much time passes between
+/// calls to .tick(). Depending on its behavior, a Ticker can loop back to start_value when
+/// it reaches a boundary, stop at the boundary it hits, or become locked in place once it
+/// reaches end_value.
+///
+/// "Time" here is intentionally generic — .tick() doesn't assume seconds, frames, or any
+/// specific unit. It just compares whatever delta you feed .tick() against time_interval and
+/// advances current_value accordingly, which is what lets the same ticker logic drive a
+/// frame-timed cooldown, a world clock, or anything else that changes over some unit of "time".
+///
+/// A ticker's unit of time will be equal to the unit of the number you pass into the ticker's .tick() call(s).
+///
+/// ---
+///
+/// #### What Are The Fields of a Ticker And What Do They Do?
+///
+/// - **`start_value`**
+///     - Represents the beginning value of a ticker and acts as one of the boundaries for current_value.
+///     - Can be manipulated through addition and setter methods if the ticker is mutable.
+///
+/// - **`current_value`**
+///     - Represents the value a ticker is currently at.
+///     - current_value is bound to the range that start_value and end_value create.
+///     - Ticking causes current_value to change, even if the ticker is immutable.
+///     - Can be manipulated through addition and setter methods if the ticker is mutable.
+///     - **For Looping Tickers**
+///         - current_value will be set to start_value when a loop triggers.
+///         - current_value hitting end_value will cause a loop to trigger.
+///     - **For Oneshot Tickers**
+///         - current_value hitting a boundary will assign current_value to be the boundary's value.
+///     - **For Freezing Tickers**
+///         - current_value hitting end_value will cause the ticker to become immutable.
+///
+/// - **`end_value`**
+///     - Represents the ending value of a ticker and acts as one of the boundaries for current_value.
+///     - Can be manipulated through addition and setter methods if the ticker is mutable.
+///
+/// - **`time_interval`**
+///     - The amount of time that it takes for current_value to change by 1.
+///     - Use this field to slow or speed up current_value's change.
+///     - Can be manipulated through addition and setter methods if the ticker is mutable.
+///
+/// - **`stored_time`**
+///     - Represents the remainder of time from the last .tick() call.
+///     - Used by the .tick() method to keep the timing accurate.
+///
+/// - **`is_paused`**
+///     - Represents whether a ticker is paused or not. A paused ticker prevents .tick() calls from doing anything.
+///     - Can be manipulated through a setter method if the ticker is mutable.
+///
+/// - **`is_ticking_up`**
+///     - Represents the tick direction of a ticker.
+///     - Ticking up means that current_value will increase by 1 when the value of time stored in time_interval passes.
+///     - Ticking down means that current_value will decrease by 1 when the value of time stored in time_interval passes.
+///     - Can be manipulated through a setter method if the ticker is mutable.
+///
+/// - **`is_handling_time_spikes`**
+///     - **If True**
+///         - Will make it so that .tick() calls on a ticker are to add or subtract all built-up integer time since
+///         the last .tick() call to current_value; addition/subtraction is dependent on is_ticking_up.
+///         Any floating remainder gets put into stored_time for the next .tick() call.
+///     - **If False**
+///         - Will make it so that .tick() calls on a ticker are to add or subtract 1 to current_value;
+///         addition/subtraction is dependent on is_ticking_up.
+///     - Can be manipulated through a setter method if the ticker is mutable.
+///
+/// - **`behavior`**
+///     - Dictates the type of behavior a ticker is currently set to.
+///     - Can be used to stop a ticker from looping, or to start a ticker to loop.
+///     - Can be used to change the mutability of a ticker.
+///     - Can be manipulated through a setter method if the ticker is mutable **or** immutable.
+///
+/// ---
+///
+/// #### What Are the Different Behaviors a Ticker Can Have?
+///
+/// - **`Looper`**
+///     - The ticker is **immutable** and will loop when current_value hits either start_value or end_value.  When a loop triggers, current_value is reset back to start_value.
+///
+///
+/// - **`MutLooper`**
+///     - The ticker is **mutable** and will loop when current_value hits either start_value or end_value.  When a loop triggers, current_value is reset back to start_value.
+///
+///
+/// - **`Oneshot`**
+///     - The ticker is **immutable** and will assign current_value to a boundary's value if current_value were to hit start_value or end_value; start and end values are the boundaries.
+///     - The ticker's stored_time is set to 0.0 when current_value hits end_value.  This ensures the time state is completely reset once it reaches the end.
+///
+///
+/// - **`MutOneshot`**
+///     - The ticker is **mutable** and will assign current_value to a boundary's value if current_value were to hit start_value or end_value; start and end values are the boundaries.
+///     - The ticker's stored_time is set to 0.0 when current_value hits end_value.  This ensures the time state is completely reset once it reaches the end.
+///
+///
+/// - **`Freezing`**
+///     - The ticker begins **mutable**, but it will become **immutable** once current_value hits end_value.
+///     - The ticker's stored_time is set to 0.0 when current_value hits end_value.  This ensures the time state is completely reset once it reaches the end.
+///
+/// ---
+///
+/// #### What Exactly is Changeable in Tickers?
+/// - **`Ticker is Mutable`**
+///     - Every field besides stored_time can be manipulated directly.  stored_time can be changed indirectly through the .hard_reset() method.
+/// - **`Ticker is Immutable`**
+///     - The only field that can be changed is behavior; this does mean that you can flip immutable tickers to mutable ones.
+/// - **`Ticker is Mutable or Immutable`**
+///     - current_value and stored_time will be changed if a ticker is ticking.  How and when these fields change is based on the ticker's boolean fields, what behavior the ticker is set to, and when .tick() gets called.
+///
+/// ---
+///
+/// #### What Are the Different Ticker Datatypes?
+/// - **`Ticker<i8, f32>`** : 91+ Bits
+/// - **`Ticker<i16, f32>`** : 115+ Bits
+/// - **`Ticker<i32, f32>`** : 163+ Bits
+/// - **`Ticker<i8, f64>`** : 155+ Bits
+/// - **`Ticker<i16, f64>`** : 179+ Bits
+/// - **`Ticker<i32, f64>`** : 227+ Bits
+///
+/// The "+" in the bit count is to recognize that the behavior field holds an enum value, and I have no idea
+/// how many bits an enum declaration represents.
+///
+/// ---
+///
+/// #### How Do I Make A Ticker Tick?
+/// Call the .tick() method on a ticker and pass in the time between 2 events, ticking is *usually* for events
+/// that happen both consistently and constantly (such as when frames render); the .tick() method does have the
+/// ability to take in **any** delta time.
+///
+/// Due to the complexity of the .tick() method, it can not be properly summarized here. Go read its
+/// documentation if you'd like to know more about the method.
 #[derive(Component, Reflect, Debug)]
 pub struct Ticker<V: TickerValue, P: TickerPrecision> {
     start_value:                V,
@@ -668,12 +799,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Returns true if a ticker is set to tick its `current_value` down, false otherwise.
     #[inline]
     pub fn is_ticking_down(&self) -> bool {
-        if self.is_ticking_up == false {
-            true
-        }
-        else {
-            false
-        }
+        !self.is_ticking_up
     }
 
     /// Returns true if the ticker can fire more than once in a single .tick() call, false otherwise.
@@ -1357,7 +1483,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Will set the `current_value` to be equal to the `start_value`.
     #[inline]
     pub fn reset(&mut self) {
-        self.current_value = self.start_value;
+        if self.is_mutable() {
+            self.current_value = self.start_value;
+        }
     }
 
     /// Will set the `current_value` to be equal to the `start_value` and zero out the `stored_time`.
@@ -1368,8 +1496,10 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// calculation) then do NOT use this.
     #[inline]
     pub fn hard_reset(&mut self) {
-        self.current_value = self.start_value;
-        self.stored_time = P::from_f64(0.0);
+        if self.is_mutable() {
+            self.current_value = self.start_value;
+            self.stored_time = P::from_f64(0.0);
+        }
     }
     // ########################################################################################## //
 
@@ -1381,6 +1511,8 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// that happen both consistently and constantly (such as when frames render); it does have the
     /// ability to take in **any** delta time.
     ///
+    /// ---
+    ///
     /// #### What The Hell Does Ticking Do?
     /// The simplified version (read the method's code for the complex version) of calling the .tick()
     /// method on a ticker is as follows:
@@ -1389,6 +1521,8 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// 3. Reassign stored_time to the result of `stored_time %= time_interval`.  We do this to carry
     /// over our remainder to keep the state of a Ticker's time accurate to the events that are being
     /// tracked.
+    ///
+    /// ---
     ///
     /// #### What Impacts Ticking And How?
     /// The fields of a ticker which impact the calculations inside this method are as follows:
@@ -1408,11 +1542,17 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///     - **MutOneshot** : current_value will be set to the boundary it hits or goes past.
     ///     - **Freezing** : current_value will be set to the boundary it hits or goes past.
     ///
+    /// ---
+    ///
     /// #### Does .tick() Impact a Ticker's Units?
     /// Yes.  The units for a Ticker's integers and float fields are based on what is passed into the
     /// .tick() method.  If the passed value represents the difference in seconds between 2 frames,
-    /// the Ticker's time_interval and stored_time units would be seconds; the start_value,
-    /// current_value, and end_value would also have seconds as their unit.
+    /// the Ticker's time_interval and stored_time units would be seconds.  From there, the start_value,
+    /// current_value, and end_value would be based on time_interval's value and unit.  For instance,
+    /// if time_interval is set to 37.0 and .tick() took in seconds, then a 1 inside any of the value
+    /// fields will be equal to 37 seconds; a 2 in current_value in this example would be 74 seconds.
+    ///
+    /// ---
     ///
     /// #### Example of .tick() in Action
     /// Consider the following factors first:
