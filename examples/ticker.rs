@@ -1,8 +1,9 @@
 
 // Imports
 use bevy::prelude::*;
-use mirth_engine_testing_tools::{check_condition, TestColors, TestSet};
 use mirth_engine_tickers::Tickers;
+#[cfg(feature = "ticker_testing")]
+use mirth_engine_testing_tools::{check_condition, TestColors, TestSet};
 
 fn main() {
     App::new()

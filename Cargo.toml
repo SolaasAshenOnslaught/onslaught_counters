@@ -1,3 +1,4 @@
+
 [package]
 name = "mirth_engine_tickers"
 version = "0.0.1"
@@ -7,7 +8,7 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 bevy = "0.19.0"
-mirth_engine_testing_tools = "0.0.3"
+mirth_engine_testing_tools = { version = "0.0.3", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 
 [features]
@@ -19,9 +20,24 @@ default = [
 ]
 
 ########################### TICKER FEATURES ###############################
+
+# Enable this if you're trying to use the examples folder, otherwise make sure this is disabled so that you don't add
+# the mirth_engine_testing_tools dependency.
+ticker_testing = ["mirth_engine_testing_tools"]
+
+# Enable this if you want to reflect Ticker data for Bevy scenes; also used for serialization, but serialization usage
+# will require ticker_serialize to be enabled as well.  ticker_reflect and ticker_serialize are split into 2 features
+# since Bevy's Reflect has multiple purposes beyond just serialization.
 ticker_reflect = []
+
+# Enable this and ticker_reflect if you want to save Ticker data (if you're implementing a save feature in your game, you should enable this).
+# ticker_reflect and ticker_serialize are split into 2 features since Bevy's Reflect has multiple purposes beyond just serialization.
 ticker_serialize = ["serde"]
 
+# Enable any of these types depending on how much precision you want in your tickers and how much memory your particular
+# ticker values should take up.  It's import to know that enabling these types don't come with the frametime system for
+# properly timing things with Bevy - if you want such a system, enable the corresponding ticker type's system feature
+# counterpart.  As an example, ticker_type_i8_f32 goes with ticker_systems_i8_f32.
 ticker_type_i8_f32 = []
 ticker_type_i16_f32 = []
 ticker_type_i32_f32 = []
@@ -29,6 +45,9 @@ ticker_type_i8_f64 = []
 ticker_type_i16_f64 = []
 ticker_type_i32_f64 = []
 
+# These features are useless without their corresponding Ticker type enabled.  These systems are split from the Ticker type
+# features because it's possible to use the ticker types without the systems - users of the Ticker types can make their own
+# custom systems.
 ticker_systems_i8_f32 = []
 ticker_systems_i16_f32 = []
 ticker_systems_i32_f32 = []
@@ -36,6 +55,10 @@ ticker_systems_i8_f64 = []
 ticker_systems_i16_f64 = []
 ticker_systems_i32_f64 = []
 
+# Enables all types of Tickers.
+# Best to enable alone when you want to specify your own systems for each Ticker type.  Otherwise, it's a good idea
+# to pair this feature with the ticker-systems feature (or just use ticker-all if you're looking to add on serialization
+# and reflection).
 ticker-types = [
     "ticker_type_i8_f32",
     "ticker_type_i16_f32",
@@ -45,6 +68,9 @@ ticker-types = [
     "ticker_type_i32_f64",
 ]
 
+# Enables all systems of Tickers.  This is pointless to enable unless you're also turning on the ticker-types feature.
+# I recommend turning on strictly ticker-types and ticker-systems only when you want to make use of all the Tickers WITHOUT
+# reflection or serialization.  Otherwise, just use the ticker-all feature.
 ticker-systems = [
     "ticker_type_i8_f32",
     "ticker_type_i16_f32",
@@ -54,6 +80,8 @@ ticker-systems = [
     "ticker_type_i32_f64",
 ]
 
+# Enables all ticker systems except for ticker_testing since that feature is purposed for running the Ticker examples.
+# Enable this feature when you want everything that Tickers offer.
 ticker-all = [
     "ticker_reflect",
     "ticker_serialize",
