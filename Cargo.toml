@@ -17,8 +17,8 @@ mirth_engine_testing_tools = { version = "0.0.5", optional = true }
 [features]
 default = [
     "ticker_serialize",
-    "ticker_reflect_i32_f32",
-    "ticker_systems_i32_f32",
+    "ticker_reflect_i8_f32",
+    "ticker_systems_i8_f32",
 ]
 
 ########################### TICKER FEATURES ###############################
@@ -52,7 +52,7 @@ ticker_serialize = ["serde"]
 # Enable the system(s) that correspond to the Ticker type(s) you plan to use.  Each system
 # reads Bevy's Time resource and calls .tick() on every Ticker of the matching type each frame.
 # These are optional so that users who want to drive tickers with their own custom systems can
-# do so without pulling in the bevy_time dependency, and selectable so that only the systems
+# do so without pulling in the bevy_time dependency, and they are selectable so that only the systems
 # needed for the Ticker types actually in use are running each frame.
 ticker_systems_i8_f32 = ["bevy_time"]
 ticker_systems_i16_f32 = ["bevy_time"]

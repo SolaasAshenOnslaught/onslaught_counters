@@ -355,6 +355,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     // ##################################### CONSTRUCTORS ######################################## //
     /// Used for completely defining a custom ticker.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new(0, 10, 100, 1.0, false, true, true, TickerBehaviors::MutLooper);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
+    /// ```
     pub fn new(
         start_value:                V,
         current_value:              V,
@@ -396,6 +404,15 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### What Is the Tick Direction If My Initial start_value and end_value Are Equal?
     /// Up.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_looper(0, 100, 1.0, true);
+    /// assert!(ticker.is_ticking_up());
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::Looper);
+    /// ```
     pub fn new_looper(
         starting_value:             V,
         end_value:                  V,
@@ -425,6 +442,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// #### What is the Behavior of a Looper Ticker?
     /// The ticker is **immutable** and will loop when `current_value` hits either `start_value` or `end_value`.
     /// When a loop triggers, `current_value` is reset back to `start_value`.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 25, 100, 1.0, true, true);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::Looper);
+    /// ```
     pub fn new_looper_custom(
         start_value:                V,
         current_value:              V,
@@ -464,6 +489,15 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### What Is the Tick Direction If My Initial start_value and end_value Are Equal?
     /// Up.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper(10, 0, 1.0, true);
+    /// assert!(ticker.is_ticking_down());
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
+    /// ```
     pub fn new_mutlooper(
         starting_value:             V,
         end_value:                  V,
@@ -493,6 +527,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// #### What is the Behavior of a MutLooper Ticker?
     /// The ticker is **mutable** and will loop when `current_value` hits either `start_value` or `end_value`.
     /// When a loop triggers, `current_value` is reset back to `start_value`.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 50, 100, 1.0, true, true);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
+    /// ```
     pub fn new_mutlooper_custom(
         start_value:                V,
         current_value:              V,
@@ -533,6 +575,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### What Is the Tick Direction If My Initial start_value and end_value Are Equal?
     /// Up.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_oneshot(0, 10, 1.0, true);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::Oneshot);
+    /// ```
     pub fn new_oneshot(
         starting_value:             V,
         end_value:                  V,
@@ -563,6 +613,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// The ticker is **immutable** and will assign `current_value` to a boundary's value if `current_value` were to hit `start_value` or `end_value`; start and end values are the boundaries.
     ///
     /// Additionally, the ticker's `stored_time` is set to 0.0 when `current_value` hits `end_value`.  This ensures the time state is completely reset once it reaches the end.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_oneshot_custom(0, 5, 10, 1.0, true, true);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::Oneshot);
+    /// ```
     pub fn new_oneshot_custom(
         start_value:                V,
         current_value:              V,
@@ -603,6 +661,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### What Is the Tick Direction If My Initial start_value and end_value Are Equal?
     /// Up.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutoneshot(0, 100, 2.0, false);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::MutOneshot);
+    /// ```
     pub fn new_mutoneshot(
         starting_value:             V,
         end_value:                  V,
@@ -633,6 +699,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// The ticker is **mutable** and will assign `current_value` to a boundary's value if `current_value` were to hit `start_value` or `end_value`; start and end values are the boundaries.
     ///
     /// Additionally, the ticker's `stored_time` is set to 0.0 when `current_value` hits `end_value`.  This ensures the time state is completely reset once it reaches the end.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutoneshot_custom(10, 20, 30, 1.0, true, true);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::MutOneshot);
+    /// ```
     pub fn new_mutoneshot_custom(
         start_value:                V,
         current_value:              V,
@@ -673,6 +747,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### What Is the Tick Direction If My Initial start_value and end_value Are Equal?
     /// Up.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_freezing(0, 100, 1.0, true);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::Freezing);
+    /// ```
     pub fn new_freezing(
         starting_value:             V,
         end_value:                  V,
@@ -703,6 +785,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// The ticker begins **mutable**, but it will become **immutable** once `current_value` hits `end_value`.
     ///
     /// Additionally, the ticker's `stored_time` is set to 0.0 when `current_value` hits `end_value`.  This ensures the time state is completely reset once it reaches the end.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_freezing_custom(0, 0, 10, 1.0, true, true);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::Freezing);
+    /// ```
     pub fn new_freezing_custom(
         start_value:                V,
         current_value:              V,
@@ -738,18 +828,42 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     // ##################################### GETTERS ########################################## //
     /// Returns the start_value of a ticker.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(5, 5, 10, 1.0, true, true);
+    /// assert_eq!(ticker.start_value(), 5);
+    /// ```
     #[inline]
     pub fn start_value(&self) -> V {
         self.start_value
     }
 
     /// Returns the current_value of a Ticker.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 7, 10, 1.0, true, true);
+    /// assert_eq!(ticker.current_value(), 7);
+    /// ```
     #[inline]
     pub fn current_value(&self) -> V {
         self.current_value
     }
 
     /// Returns the end_value of a Ticker.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 20, 1.0, true, true);
+    /// assert_eq!(ticker.end_value(), 20);
+    /// ```
     #[inline]
     pub fn end_value(&self) -> V {
         self.end_value
@@ -765,6 +879,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ticker has no built-in concept of "seconds" or any other unit — time_interval and stored_time
     /// are just two numbers compared against each other inside the .tick() method. The unit they represent is
     /// determined entirely by whatever unit they pass into the .tick() method.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 2.5, true, true);
+    /// assert_eq!(ticker.time_interval(), 2.5);
+    /// ```
     #[inline]
     pub fn time_interval(&self) -> P {
         self.time_interval
@@ -783,24 +905,58 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ticker has no built-in concept of "seconds" or any other unit — time_interval and stored_time
     /// are just two numbers compared against each other inside the .tick() method. The unit they represent is
     /// determined entirely by whatever unit they pass into the .tick() method.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// assert_eq!(ticker.stored_time(), 0.0);
+    /// ```
     #[inline]
     pub fn stored_time(&self) -> P {
         self.stored_time
     }
 
     /// Returns true if the ticker is paused, false otherwise.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// assert!(!ticker.is_paused());
+    /// ticker.pause();
+    /// assert!(ticker.is_paused());
+    /// ```
     #[inline]
     pub fn is_paused(&self) -> bool {
         self.is_paused
     }
 
     /// Returns true if a ticker is set to tick its `current_value` up, false otherwise.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// assert!(ticker.is_ticking_up());
+    /// ```
     #[inline]
     pub fn is_ticking_up(&self) -> bool {
         self.is_ticking_up
     }
 
     /// Returns true if a ticker is set to tick its `current_value` down, false otherwise.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(10, 10, 0, 1.0, false, true);
+    /// assert!(ticker.is_ticking_down());
+    /// ```
     #[inline]
     pub fn is_ticking_down(&self) -> bool {
         !self.is_ticking_up
@@ -813,15 +969,31 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// - `FALSE`: The ticker can `change current_value` by 1 or 0 per .tick() call, no matter how much
     /// time has built up between .tick() calls.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// assert!(ticker.is_handling_time_spikes());
+    /// ```
     #[inline]
     pub fn is_handling_time_spikes(&self) -> bool {
         self.is_handling_time_spikes
     }
 
-    /// Returns the reference to the type of behavior a ticker is set to.
+    /// Returns the behavior type of the ticker.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper(0, 10, 1.0, true);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
+    /// ```
     #[inline]
-    pub fn behavior(&self) -> &TickerBehaviors {
-        &self.behavior
+    pub fn behavior(&self) -> TickerBehaviors {
+        self.behavior
     }
     // ######################################################################################## //
 
@@ -830,13 +1002,37 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     // ##################################### SETTERS ########################################## //
     /// Changes `start_value` to the passed value.
     ///
+    ///
+    /// #### What Happens If Setting start_value Pushes current_value Out of Bounds?
+    /// If the new `start_value` shifts the valid range such that `current_value` is left outside
+    /// the boundaries, `current_value` is automatically clamped to the nearest valid edge.
+    ///
+    ///
     /// #### Important
     /// `start_value` can NOT go out of the range of `V::MIN` to `V::MAX`.
     /// Attempting to set `start_value` outside the range will cause it to be clamped down.
-    #[inline]
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 20, 100, 1.0, true, true);
+    /// ticker.set_start_value(40);
+    ///
+    /// assert_eq!(ticker.start_value(), 40);
+    /// assert_eq!(ticker.current_value(), 40); // Clamped from 20 up to the new start_value 40
+    /// ```
     pub fn set_start_value(&mut self, value: V) {
         if self.is_mutable() {
+            // 1. Set and clamp the new start value.
             self.start_value = value.clamp(V::MIN, V::MAX);
+
+            // 2. Identify the minimum and maximum boundaries between start and end.
+            let min_boundary = self.start_value.min(self.end_value);
+            let max_boundary = self.start_value.max(self.end_value);
+
+            // 3. Clamp current_value to stay within the updated boundaries.
+            self.current_value = self.current_value.clamp(min_boundary, max_boundary);
         }
     }
 
@@ -845,6 +1041,15 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// #### Important
     /// `current_value` can NOT go out of the range that `start_value` and `end_value` create.
     /// Attempting to set `current_value` outside the range will cause it to be clamped down.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// ticker.set_current_value(5);
+    /// assert_eq!(ticker.current_value(), 5);
+    /// ```
     #[inline]
     pub fn set_current_value(&mut self, value: V) {
         if self.is_mutable() {
@@ -856,17 +1061,48 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Changes `end_value` to the passed value.
     ///
+    /// #### What Happens If Setting end_value Pushes current_value Out of Bounds?
+    /// If the new `end_value` shifts the valid range such that `current_value` is left outside
+    /// the boundaries, `current_value` is automatically clamped to the nearest valid edge.
+    ///
     /// #### Important
     /// `end_value` can NOT go out of the range of `V::MIN` to `V::MAX`.
     /// Attempting to set `end_value` outside the range will cause it to be clamped down.
-    #[inline]
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 80, 100, 1.0, true, true);
+    /// ticker.set_end_value(50);
+    ///
+    /// assert_eq!(ticker.end_value(), 50);
+    /// assert_eq!(ticker.current_value(), 50); // Clamped from 80 down to the new end_value 50
+    /// ```
     pub fn set_end_value(&mut self, value: V) {
         if self.is_mutable() {
+            // 1. Set and clamp the new end value.
             self.end_value = value.clamp(V::MIN, V::MAX);
+
+            // 2. Identify the minimum and maximum boundaries between start and end.
+            let min_boundary = self.start_value.min(self.end_value);
+            let max_boundary = self.start_value.max(self.end_value);
+
+            // 3. Clamp current_value to stay within the updated boundaries.
+            self.current_value = self.current_value.clamp(min_boundary, max_boundary);
         }
     }
 
     /// Prevents .tick() calls on a ticker from doing their job.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// ticker.pause();
+    /// assert!(ticker.is_paused());
+    /// ```
     #[inline]
     pub fn pause(&mut self) {
         if self.is_mutable() {
@@ -875,6 +1111,16 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     }
 
     /// Allows .tick() calls on a ticker to do their job.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// ticker.pause();
+    /// ticker.unpause();
+    /// assert!(!ticker.is_paused());
+    /// ```
     #[inline]
     pub fn unpause(&mut self) {
         if self.is_mutable() {
@@ -883,6 +1129,16 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     }
 
     /// Causes the ticker's current_value to count up.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(5, 5, 0, 1.0, false, true);
+    /// assert!(ticker.is_ticking_down());
+    /// ticker.tick_up();
+    /// assert!(ticker.is_ticking_up());
+    /// ```
     #[inline]
     pub fn tick_up(&mut self) {
         if self.is_mutable() {
@@ -891,6 +1147,16 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     }
 
     /// Causes the ticker's current_value to count down.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// assert!(ticker.is_ticking_up());
+    /// ticker.tick_down();
+    /// assert!(ticker.is_ticking_down());
+    /// ```
     #[inline]
     pub fn tick_down(&mut self) {
         if self.is_mutable() {
@@ -901,6 +1167,16 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Will make it so that .tick() calls on a ticker are to add or subtract all built-up integer time since
     /// the last .tick() call to `current_value`; addition/subtraction is dependent on `is_ticking_up`.
     /// Any floating remainder gets put into stored_time for the next .tick() call.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, false);
+    /// assert!(!ticker.is_handling_time_spikes());
+    /// ticker.start_handling_time_spikes();
+    /// assert!(ticker.is_handling_time_spikes());
+    /// ```
     #[inline]
     pub fn start_handling_time_spikes(&mut self) {
         if self.is_mutable() {
@@ -910,6 +1186,16 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     /// Will make it so that .tick() calls on a ticker are to add or subtract 1 to `current_value`;
     /// addition/subtraction is dependent on `is_ticking_up`.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// assert!(ticker.is_handling_time_spikes());
+    /// ticker.stop_handling_time_spikes();
+    /// assert!(!ticker.is_handling_time_spikes());
+    /// ```
     #[inline]
     pub fn stop_handling_time_spikes(&mut self) {
         if self.is_mutable() {
@@ -922,6 +1208,15 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// #### Important Aspects of This Setter
     /// - Can be used to switch the mutability of a Ticker.
     /// - Can be used to turn on/off the looping behavior of a Ticker.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// ticker.set_behavior(TickerBehaviors::Freezing);
+    /// assert_eq!(ticker.behavior(), TickerBehaviors::Freezing);
+    /// ```
     #[inline]
     pub fn set_behavior(&mut self, new_behavior: TickerBehaviors) {
         self.behavior = new_behavior;
@@ -936,6 +1231,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// # When Should I Use This Method?
     /// Use this method in oneshot tickers that count to `start_value` if you want to determine if the
     /// oneshot is finished.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// assert!(ticker.is_current_at_start());
+    /// ```
     #[inline]
     pub fn is_current_at_start(&self) -> bool {
         self.current_value == self.start_value
@@ -946,6 +1249,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// # When Should I Use This Method?
     /// Use this method in oneshot tickers that count to `end_value` if you want to determine if the
     /// oneshot is finished.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 10, 10, 1.0, true, true);
+    /// assert!(ticker.is_current_at_end());
+    /// ```
     #[inline]
     pub fn is_current_at_end(&self) -> bool {
         self.current_value == self.end_value
@@ -961,6 +1272,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Only scenario I can think for using this would be when the bounds of a ticker are slowly tightening
     /// and you need something to check when they have finally met one another.  It is possible to tighten
     /// the bounds by constantly setting `start_value` and `end_value` to new numbers.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(10, 10, 10, 1.0, true, true);
+    /// assert!(ticker.is_start_at_end());
+    /// ```
     #[inline]
     pub fn is_start_at_end(&self) -> bool {
         self.start_value == self.end_value
@@ -973,6 +1292,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Returns the difference between `current_value` and `start_value`.
     ///
     /// Will only return positive numbers, including 0.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 35, 100, 1.0, true, true);
+    /// assert_eq!(ticker.difference_from_start(), 35);
+    /// ```
     pub fn difference_from_start(&self) -> i64 {
         let min: i64 = self.current_value.min(self.start_value).as_i64();
         let max: i64 = self.current_value.max(self.start_value).as_i64();
@@ -982,6 +1309,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Returns the difference between `current_value` and `end_value`.
     ///
     /// Will only return positive numbers, including 0.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 35, 100, 1.0, true, true);
+    /// assert_eq!(ticker.difference_from_end(), 65);
+    /// ```
     pub fn difference_from_end(&self) -> i64 {
         let min: i64 = self.current_value.min(self.end_value).as_i64();
         let max: i64 = self.current_value.max(self.end_value).as_i64();
@@ -991,6 +1326,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Returns the difference between `start_value` and `end_value`.
     ///
     /// Will only return positive numbers, including 0.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(10, 35, 100, 1.0, true, true);
+    /// assert_eq!(ticker.difference_from_start_to_end(), 90);
+    /// ```
     pub fn difference_from_start_to_end(&self) -> i64 {
         let min: i64 = self.start_value.min(self.end_value).as_i64();
         let max: i64 = self.start_value.max(self.end_value).as_i64();
@@ -1356,18 +1699,57 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     // ################################### ADD METHODS ######################################## //
     /// Adds to the `start_value` of the ticker by the passed value.  Can take in negatives for subtraction.
+    /// Will not let the result of summing cause overflow or wrapping; results will always be within
+    /// `V::MIN` to `V::MAX` (inclusive).
     ///
-    /// Will not let the result of summing cause overflow or wrapping; results will always be within `V::MIN` to `V::MAX` (inclusive).
-    #[inline]
+    /// #### What Happens If Adding To start_value Pushes current_value Out of Bounds?
+    /// If the new `start_value` shifts the valid range such that `current_value` is left outside
+    /// the boundaries, `current_value` is automatically clamped to the nearest valid edge.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// // Case 1: Increasing start_value shifts the lower bound up, clamping current_value
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 20, 100, 1.0, true, true);
+    /// ticker.add_to_start_value(40); // New start_value becomes 40
+    ///
+    /// assert_eq!(ticker.start_value(), 40);
+    /// assert_eq!(ticker.current_value(), 40); // Clamped from 20 up to 40
+    ///
+    /// // Case 2: Swapping directions where start > end
+    /// let mut ticker_down = Ticker::<i32, f32>::new_mutlooper_custom(100, 90, 50, 1.0, false, true);
+    /// ticker_down.add_to_start_value(-20); // New start_value becomes 80 (Range is now 80 down to 50)
+    ///
+    /// assert_eq!(ticker_down.start_value(), 80);
+    /// assert_eq!(ticker_down.current_value(), 80); // Clamped from 90 down to 80
+    /// ```
     pub fn add_to_start_value(&mut self, value: V) {
         if self.is_mutable() {
+            // 1. Calculate the new start value safely.
             self.start_value = self.start_value.sat_add(value).clamp(V::MIN, V::MAX);
+
+            // 2. Identify the minimum and maximum boundaries between start and end.
+            let min_boundary = self.start_value.min(self.end_value);
+            let max_boundary = self.start_value.max(self.end_value);
+
+            // 3. Clamp current_value to stay within the updated boundaries.
+            self.current_value = self.current_value.clamp(min_boundary, max_boundary);
         }
     }
 
     /// Adds to the `current_value` of the ticker by the passed value.  Can take in negatives for subtraction.
     ///
     /// Will not let the result of summing cause overflow or wrapping; results will always be within `start_value` to `end_value` (inclusive).
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 40, 100, 1.0, true, true);
+    /// ticker.add_to_current_value(15);
+    /// assert_eq!(ticker.current_value(), 55);
+    /// ```
     #[inline]
     pub fn add_to_current_value(&mut self, value: V) {
         if self.is_mutable() {
@@ -1378,12 +1760,41 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     }
 
     /// Adds to the `end_value` of the ticker by the passed value.  Can take in negatives for subtraction.
+    /// Will not let the result of summing cause overflow or wrapping; results will always be within
+    /// `V::MIN` to `V::MAX` (inclusive).
     ///
-    /// Will not let the result of summing cause overflow or wrapping; results will always be within `V::MIN` to `V::MAX` (inclusive).
-    #[inline]
+    /// #### What Happens If Adding To end_value Pushes current_value Out of Bounds?
+    /// If the new `end_value` shifts the valid range such that `current_value` is left outside
+    /// the boundaries, `current_value` is automatically clamped to the nearest valid edge.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// // Case 1: Shrinking the range pushes current_value out
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 80, 100, 1.0, true, true);
+    /// ticker.add_to_end_value(-50); // New end_value becomes 50
+    ///
+    /// assert_eq!(ticker.end_value(), 50);
+    /// assert_eq!(ticker.current_value(), 50); // Clamped from 80 down to 50
+    ///
+    /// // Case 2: Swapping directions where start > end
+    /// let mut ticker_down = Ticker::<i32, f32>::new_mutlooper_custom(100, 55, 50, 1.0, false, true);
+    /// ticker_down.add_to_end_value(10); // New end_value becomes 60 (Range is now 100 down to 60)
+    /// assert_eq!(ticker_down.end_value(), 60);
+    /// assert_eq!(ticker_down.current_value(), 60); // Clamped from 55 up to 60
+    /// ```
     pub fn add_to_end_value(&mut self, value: V) {
         if self.is_mutable() {
+            // 1. Calculate the new end value safely.
             self.end_value = self.end_value.sat_add(value).clamp(V::MIN, V::MAX);
+
+            // 2. Identify the minimum and maximum boundaries between start and end.
+            let min_boundary = self.start_value.min(self.end_value);
+            let max_boundary = self.start_value.max(self.end_value);
+
+            // 3. Clamp current_value to stay within the updated boundaries.
+            self.current_value = self.current_value.clamp(min_boundary, max_boundary);
         }
     }
 
@@ -1397,6 +1808,21 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// No. If your goal is to slow time or slow an accumulation to the point that it reverses it,
     /// I suggest you flip the tick direction using .tick_up() or .tick_down() at a specific current_value or
     /// after the rate of speed you're applying has hit a specific value.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper(0, 10, 1.0, true);
+    ///
+    /// // Add time to the interval
+    /// ticker.add_to_time_interval(0.5);
+    /// assert_eq!(ticker.time_interval(), 1.5);
+    ///
+    /// // Value cannot fall below or equal to 0.0, so subtracting too much will clamp it
+    /// ticker.add_to_time_interval(-5.0);
+    /// assert!(ticker.time_interval() > 0.0);
+    /// ```
     #[inline]
     pub fn add_to_time_interval(&mut self, value: P) {
         if self.is_mutable() {
@@ -1408,8 +1834,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
 
     // ################################### PERCENTAGE METHODS ################################### //
-    /// Returns the percentage of `current_value`'s distance from `start_value`, measured across
-    /// the full range from `start_value` to `end_value`.
+    /// Returns the exact percentage of completion from `start_value` to `end_value` as a floating point.
     ///
     /// A return value of `0.0` means `current_value` is at `start_value`, and `1.0` means it is
     /// at `end_value`.
@@ -1419,17 +1844,15 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Examples
     /// ```
-    /// // start_value = 0, current_value = 40, end_value = 100
-    /// // Returns 0.4
+    /// use mirth_engine_tickers::Ticker;
     ///
-    /// // start_value = -37, current_value = 40, end_value = 80
-    /// // Returns ~0.6581
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 40, 100, 1.0, true, true);
     ///
-    /// // Equal boundaries (special case)
-    /// // start_value = 100, current_value = x, end_value = 100
-    /// // Returns -1.0
+    /// // Since it deals with floats, tolerate tiny inaccuracies
+    /// let percentage = ticker.percentage_completed();
+    /// assert!((percentage - 0.4).abs() < f32::EPSILON);
     /// ```
-    pub fn percentage_from_start(&self) -> f32 {
+    pub fn percentage_completed(&self) -> f32 {
 
         if self.start_value == self.end_value {
             return -1.0;
@@ -1444,8 +1867,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         (current - start) * range_reciprocal
     }
 
-    /// Returns the percentage of `current_value`'s distance from `end_value`, measured across
-    /// the full range from `end_value` to `start_value`.
+    /// Returns the remaining percentage needed to reach `end_value` as a floating point.
     ///
     /// A return value of `0.0` means `current_value` is at `end_value`, and `1.0` means it is
     /// at `start_value`.
@@ -1455,17 +1877,15 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Examples
     /// ```
-    /// // start_value = 0, current_value = 60, end_value = 100
-    /// // Returns 0.4
+    /// use mirth_engine_tickers::Ticker;
     ///
-    /// // start_value = -37, current_value = 40, end_value = 80
-    /// // Returns ~0.3419
+    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 25, 100, 1.0, true, true);
     ///
-    /// // Equal boundaries (special case)
-    /// // start_value = 100, current_value = x, end_value = 100
-    /// // Returns -1.0
+    /// // Since it deals with floats, tolerate tiny inaccuracies
+    /// let remaining = ticker.percentage_remaining();
+    /// assert!((remaining - 0.75).abs() < f32::EPSILON);
     /// ```
-    pub fn percentage_from_end(&self) -> f32 {
+    pub fn percentage_remaining(&self) -> f32 {
 
         if self.start_value == self.end_value {
             return -1.0;
@@ -1484,20 +1904,42 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
 
     // ##################################### RESET METHODS ###################################### //
-    /// Will set the `current_value` to be equal to the `start_value`.
+    /// Resets `current_value` back to `start_value`.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 40, 100, 1.0, true, true);
+    /// assert_eq!(ticker.current_value(), 40);
+    ///
+    /// ticker.soft_reset();
+    /// assert_eq!(ticker.current_value(), 0);
     #[inline]
-    pub fn reset(&mut self) {
+    pub fn soft_reset(&mut self) {
         if self.is_mutable() {
             self.current_value = self.start_value;
         }
     }
 
-    /// Will set the `current_value` to be equal to the `start_value` and zero out the `stored_time`.
+    /// Resets `current_value` back to `start_value`, and zeroes out `stored_time`.
     ///
     /// #### When To Use This Over Reset?
     /// Best to use when you want to completely wipe whatever has been accumulated, including the
     /// timing state.  If you need to carry over the timing state (the remainder in the last .tick()
     /// calculation) then do NOT use this.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 40, 100, 1.0, true, true);
+    /// ticker.tick(1.3);
+    /// ticker.hard_reset();
+    ///
+    /// assert_eq!(ticker.current_value(), 0);
+    /// assert_eq!(ticker.stored_time(), 0.0);
+    /// ```
     #[inline]
     pub fn hard_reset(&mut self) {
         if self.is_mutable() {
@@ -1698,6 +2140,17 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     // ###################################### HELPER METHODS ######################################## //
     /// Returns true if the current behavior of the ticker is mutable, otherwise false.
+    ///
+    /// #### Examples
+    /// ```
+    /// use mirth_engine_tickers::Ticker;
+    ///
+    /// let looper = Ticker::<i32, f32>::new_looper(0, 10, 1.0, true);
+    /// assert!(!looper.is_mutable());
+    ///
+    /// let mut_looper = Ticker::<i32, f32>::new_mutlooper(0, 10, 1.0, true);
+    /// assert!(mut_looper.is_mutable());
+    /// ```
     #[inline]
     pub fn is_mutable(&self) -> bool {
         match self.behavior {
@@ -1717,13 +2170,13 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 /// Accepts any type that implements [`PartialOrd`] and [`Display`], meaning
 /// all numeric primitives, [`char`], [`String`], and [`&str`] are valid inputs.
 ///
-/// # Panics
+/// #### Panics
 /// Panics if the value is outside the provided range.
 ///
-/// # Example
-/// ```
-/// check_value(5, 1, 10);    // Passes
-/// check_value(15, 1, 10);   // Panics
+/// #### Example
+/// ```ignore
+/// check_if_value_is_within_range(5, 1, 10);    // Passes
+/// check_if_value_is_within_range(15, 1, 10);   // Panics
 /// ```
 fn check_if_value_is_within_range<T: PartialOrd + Display>(value: T, minimum: T, maximum: T) {
     assert!(
