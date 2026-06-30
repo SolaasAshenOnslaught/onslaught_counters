@@ -17,8 +17,8 @@ mirth_engine_testing_tools = { version = "0.0.5", optional = true }
 [features]
 default = [
     "ticker_serialize",
-    "ticker_reflect_i8_f32",
-    "ticker_systems_i8_f32",
+    "ticker_reflect",
+    "ticker_systems",
 ]
 
 ########################### TICKER FEATURES ###############################
@@ -27,80 +27,34 @@ default = [
 # which is why this is disabled by default — it should never be on in a shipped game.
 ticker_testing = ["mirth_engine_testing_tools"]
 
-# Activated automatically when any per-type ticker_reflect feature is enabled.
-# Can also be enabled directly to make all Ticker types reflectable at once.
-# Enables reflection for use with Bevy scenes, editors, and inspector tools.
-# Also a prerequisite for serialization, but ticker_serialize must be enabled
-# separately since Reflect has uses beyond serialization alone.
+# Enable this to make all Ticker types reflectable.
+# Enabling this will add the bevy_reflect dependency.
 ticker_reflect = ["bevy_reflect", "bevy_app/bevy_reflect"]
 
-# Enable the reflect feature(s) that correspond to the Ticker type(s) you plan to use.
-# Each feature makes that specific Ticker type reflectable and registers it with Bevy's
-# type registry, enabling scene support, editor inspection, and serialization for that type.
-ticker_reflect_i8_f32 = ["ticker_reflect"]
-ticker_reflect_i16_f32 = ["ticker_reflect"]
-ticker_reflect_i32_f32 = ["ticker_reflect"]
-ticker_reflect_i8_f64 = ["ticker_reflect"]
-ticker_reflect_i16_f64 = ["ticker_reflect"]
-ticker_reflect_i32_f64 = ["ticker_reflect"]
+# Enable this if you want to serialize and deserialize Ticker data (e.g. for a save system).
+# Enabling this will enable ticker_reflect and the serde dependency as they are required for
+# serialization to work properly.
+ticker_serialize = ["serde", "ticker_reflect"]
 
-# Enable this alongside a ticker_reflect feature if you want to serialize and deserialize Ticker data
-# (e.g. for a save system).  ticker_serialize alone is not enough — a ticker_reflect feature must also
-# be enabled for serialization to work.
-ticker_serialize = ["serde"]
-
-# Enable the system(s) that correspond to the Ticker type(s) you plan to use.  Each system
-# reads Bevy's Time resource and calls .tick() on every Ticker of the matching type each frame.
-# These are optional so that users who want to drive tickers with their own custom systems can
-# do so without pulling in the bevy_time dependency, and they are selectable so that only the systems
-# needed for the Ticker types actually in use are running each frame.
-ticker_systems_i8_f32 = ["bevy_time"]
-ticker_systems_i16_f32 = ["bevy_time"]
-ticker_systems_i32_f32 = ["bevy_time"]
-ticker_systems_i8_f64 = ["bevy_time"]
-ticker_systems_i16_f64 = ["bevy_time"]
-ticker_systems_i32_f64 = ["bevy_time"]
-
-# Enables reflection for all Ticker types without any systems or serialization.
-# Use this when you want every Ticker type to be reflectable but intend to drive them
-# with your own custom systems.
-ticker_reflects = [
-    "ticker_reflect_i8_f32",
-    "ticker_reflect_i16_f32",
-    "ticker_reflect_i32_f32",
-    "ticker_reflect_i8_f64",
-    "ticker_reflect_i16_f64",
-    "ticker_reflect_i32_f64",
-]
-
-# Enables all Ticker types and their frame-time systems, without reflection or
-# serialization.  Use this when you want the full set of types and systems but don't need
-# scene support, editor inspection, or save functionality.
-ticker_systems = [
-    "ticker_systems_i8_f32",
-    "ticker_systems_i16_f32",
-    "ticker_systems_i32_f32",
-    "ticker_systems_i8_f64",
-    "ticker_systems_i16_f64",
-    "ticker_systems_i32_f64",
-]
-
-# Enables everything the package offers: reflection and serialization for all Ticker types,
-# and their frame-time systems.  ticker_testing is intentionally excluded since it is only
-# needed for running examples.
-ticker_all = [
-    "ticker_serialize",
-    "ticker_reflect_i8_f32",
-    "ticker_reflect_i16_f32",
-    "ticker_reflect_i32_f32",
-    "ticker_reflect_i8_f64",
-    "ticker_reflect_i16_f64",
-    "ticker_reflect_i32_f64",
-    "ticker_systems_i8_f32",
-    "ticker_systems_i16_f32",
-    "ticker_systems_i32_f32",
-    "ticker_systems_i8_f64",
-    "ticker_systems_i16_f64",
-    "ticker_systems_i32_f64",
-]
+# Enable this if you don't plan on making custom Ticker systems.
+# Enabling this will add the bevy_time dependency and every Ticker type will have its own system running each frame.
+# And yes, this does mean that if you don't use all the Ticker types then this will create for some inefficiency
+# and some little overhead.  But the overhead is rather small and the inefficiency is only present if you don't make
+# use of all the Ticker variations.  The overhead is created from querying Ticker variations that you're not using each
+# frame; this sounds a lot worse than it actually is - from what I can tell, Bevy's ECS design handles this kind of situation
+# rather well.
+#
+# SLIGHT DEVELOPER RANT
+# In a previous commit I had each system split into separate features, that way you could selectively choose which Ticker
+# system you wanted and avoid unnecessary overhead.  However, there was a problem.  When you add the Ticker type
+# you get ALL the variations of the type since it's defined generically, and I'm not getting rid of that; the generics
+# when used well can make things very memory efficient.  Because of this, you can use variations of Ticker and have only
+# some of the variations with systems active.  And that's just really fucking weird unless you are aware at all times that
+# such a thing is going on in the background.  Now, part of the reason why this SINGULAR feature exists is to avoid that
+# weirdness.  You turn it on, you get the Ticker systems for all the Ticker variations.  You turn it off, you should then be fully
+# aware that your Tickers need a custom system setup for them.  I have found this all or nothing method to be less confusing
+# and more intuitive at the cost of a minor efficiency gain.  But for those who disagree, feel free to check the commit
+# log on the repo and look at how I set up the features for each system - you can use that to construct the past version
+# of selective systems.  Or just make custom systems.
+ticker_systems = ["bevy_time"]
 ###########################################################################

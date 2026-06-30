@@ -79,8 +79,6 @@ impl TickerValue for i32 {
 
 
 
-
-
 /// Used to apply a generic to the `stored_time` and `time_interval` fields within the ticker type.
 ///
 /// Supports f32 and f64 for `stored_time` and `time_interval` fields within Ticker.
@@ -133,8 +131,6 @@ impl TickerPrecision for f64 {
 
 
 
-
-
 /// Provides tickers with a variety of different behaviors.  Here is each behavior explained:
 ///
 /// - **`Looper`**
@@ -168,8 +164,6 @@ pub enum TickerBehaviors {
     MutOneshot,
     Freezing,
 }
-
-
 
 
 
@@ -494,11 +488,11 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper(10, 0, 1.0, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper(10, 0, 1.0, true);
     /// assert!(ticker.is_ticking_down());
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
     /// ```
-    pub fn new_mutlooper(
+    pub fn new_mut_looper(
         starting_value:             V,
         end_value:                  V,
         time_interval:              P,
@@ -532,10 +526,10 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 50, 100, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 50, 100, 1.0, true, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
     /// ```
-    pub fn new_mutlooper_custom(
+    pub fn new_mut_looper_custom(
         start_value:                V,
         current_value:              V,
         end_value:                  V,
@@ -666,10 +660,10 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutoneshot(0, 100, 2.0, false);
+    /// let ticker = Ticker::<i32, f32>::new_mut_oneshot(0, 100, 2.0, false);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutOneshot);
     /// ```
-    pub fn new_mutoneshot(
+    pub fn new_mut_oneshot(
         starting_value:             V,
         end_value:                  V,
         time_interval:              P,
@@ -704,10 +698,10 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutoneshot_custom(10, 20, 30, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_oneshot_custom(10, 20, 30, 1.0, true, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutOneshot);
     /// ```
-    pub fn new_mutoneshot_custom(
+    pub fn new_mut_oneshot_custom(
         start_value:                V,
         current_value:              V,
         end_value:                  V,
@@ -833,7 +827,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(5, 5, 10, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(5, 5, 10, 1.0, true, true);
     /// assert_eq!(ticker.start_value(), 5);
     /// ```
     #[inline]
@@ -847,7 +841,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 7, 10, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 7, 10, 1.0, true, true);
     /// assert_eq!(ticker.current_value(), 7);
     /// ```
     #[inline]
@@ -861,7 +855,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 20, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 20, 1.0, true, true);
     /// assert_eq!(ticker.end_value(), 20);
     /// ```
     #[inline]
@@ -884,7 +878,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 2.5, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 2.5, true, true);
     /// assert_eq!(ticker.time_interval(), 2.5);
     /// ```
     #[inline]
@@ -910,7 +904,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert_eq!(ticker.stored_time(), 0.0);
     /// ```
     #[inline]
@@ -924,7 +918,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(!ticker.is_paused());
     /// ticker.pause();
     /// assert!(ticker.is_paused());
@@ -940,7 +934,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_ticking_up());
     /// ```
     #[inline]
@@ -954,7 +948,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(10, 10, 0, 1.0, false, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(10, 10, 0, 1.0, false, true);
     /// assert!(ticker.is_ticking_down());
     /// ```
     #[inline]
@@ -974,7 +968,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_handling_time_spikes());
     /// ```
     #[inline]
@@ -988,7 +982,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper(0, 10, 1.0, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper(0, 10, 1.0, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
     /// ```
     #[inline]
@@ -1016,7 +1010,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 20, 100, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 20, 100, 1.0, true, true);
     /// ticker.set_start_value(40);
     ///
     /// assert_eq!(ticker.start_value(), 40);
@@ -1046,7 +1040,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.set_current_value(5);
     /// assert_eq!(ticker.current_value(), 5);
     /// ```
@@ -1073,7 +1067,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 80, 100, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 80, 100, 1.0, true, true);
     /// ticker.set_end_value(50);
     ///
     /// assert_eq!(ticker.end_value(), 50);
@@ -1099,7 +1093,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.pause();
     /// assert!(ticker.is_paused());
     /// ```
@@ -1116,7 +1110,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.pause();
     /// ticker.unpause();
     /// assert!(!ticker.is_paused());
@@ -1134,7 +1128,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(5, 5, 0, 1.0, false, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(5, 5, 0, 1.0, false, true);
     /// assert!(ticker.is_ticking_down());
     /// ticker.tick_up();
     /// assert!(ticker.is_ticking_up());
@@ -1152,7 +1146,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_ticking_up());
     /// ticker.tick_down();
     /// assert!(ticker.is_ticking_down());
@@ -1172,7 +1166,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, false);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, false);
     /// assert!(!ticker.is_handling_time_spikes());
     /// ticker.start_handling_time_spikes();
     /// assert!(ticker.is_handling_time_spikes());
@@ -1191,7 +1185,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_handling_time_spikes());
     /// ticker.stop_handling_time_spikes();
     /// assert!(!ticker.is_handling_time_spikes());
@@ -1213,7 +1207,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.set_behavior(TickerBehaviors::Freezing);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::Freezing);
     /// ```
@@ -1236,7 +1230,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 0, 10, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_current_at_start());
     /// ```
     #[inline]
@@ -1254,7 +1248,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 10, 10, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 10, 10, 1.0, true, true);
     /// assert!(ticker.is_current_at_end());
     /// ```
     #[inline]
@@ -1277,7 +1271,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(10, 10, 10, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(10, 10, 10, 1.0, true, true);
     /// assert!(ticker.is_start_at_end());
     /// ```
     #[inline]
@@ -1297,7 +1291,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 35, 100, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 35, 100, 1.0, true, true);
     /// assert_eq!(ticker.difference_from_start(), 35);
     /// ```
     pub fn difference_from_start(&self) -> i64 {
@@ -1314,7 +1308,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 35, 100, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 35, 100, 1.0, true, true);
     /// assert_eq!(ticker.difference_from_end(), 65);
     /// ```
     pub fn difference_from_end(&self) -> i64 {
@@ -1331,7 +1325,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(10, 35, 100, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(10, 35, 100, 1.0, true, true);
     /// assert_eq!(ticker.difference_from_start_to_end(), 90);
     /// ```
     pub fn difference_from_start_to_end(&self) -> i64 {
@@ -1711,14 +1705,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// use mirth_engine_tickers::Ticker;
     ///
     /// // Case 1: Increasing start_value shifts the lower bound up, clamping current_value
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 20, 100, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 20, 100, 1.0, true, true);
     /// ticker.add_to_start_value(40); // New start_value becomes 40
     ///
     /// assert_eq!(ticker.start_value(), 40);
     /// assert_eq!(ticker.current_value(), 40); // Clamped from 20 up to 40
     ///
     /// // Case 2: Swapping directions where start > end
-    /// let mut ticker_down = Ticker::<i32, f32>::new_mutlooper_custom(100, 90, 50, 1.0, false, true);
+    /// let mut ticker_down = Ticker::<i32, f32>::new_mut_looper_custom(100, 90, 50, 1.0, false, true);
     /// ticker_down.add_to_start_value(-20); // New start_value becomes 80 (Range is now 80 down to 50)
     ///
     /// assert_eq!(ticker_down.start_value(), 80);
@@ -1746,7 +1740,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 40, 100, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 40, 100, 1.0, true, true);
     /// ticker.add_to_current_value(15);
     /// assert_eq!(ticker.current_value(), 55);
     /// ```
@@ -1772,14 +1766,14 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// use mirth_engine_tickers::Ticker;
     ///
     /// // Case 1: Shrinking the range pushes current_value out
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 80, 100, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 80, 100, 1.0, true, true);
     /// ticker.add_to_end_value(-50); // New end_value becomes 50
     ///
     /// assert_eq!(ticker.end_value(), 50);
     /// assert_eq!(ticker.current_value(), 50); // Clamped from 80 down to 50
     ///
     /// // Case 2: Swapping directions where start > end
-    /// let mut ticker_down = Ticker::<i32, f32>::new_mutlooper_custom(100, 55, 50, 1.0, false, true);
+    /// let mut ticker_down = Ticker::<i32, f32>::new_mut_looper_custom(100, 55, 50, 1.0, false, true);
     /// ticker_down.add_to_end_value(10); // New end_value becomes 60 (Range is now 100 down to 60)
     /// assert_eq!(ticker_down.end_value(), 60);
     /// assert_eq!(ticker_down.current_value(), 60); // Clamped from 55 up to 60
@@ -1813,7 +1807,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper(0, 10, 1.0, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper(0, 10, 1.0, true);
     ///
     /// // Add time to the interval
     /// ticker.add_to_time_interval(0.5);
@@ -1846,7 +1840,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 40, 100, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 40, 100, 1.0, true, true);
     ///
     /// // Since it deals with floats, tolerate tiny inaccuracies
     /// let percentage = ticker.percentage_completed();
@@ -1879,7 +1873,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 25, 100, 1.0, true, true);
+    /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 25, 100, 1.0, true, true);
     ///
     /// // Since it deals with floats, tolerate tiny inaccuracies
     /// let remaining = ticker.percentage_remaining();
@@ -1910,7 +1904,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 40, 100, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 40, 100, 1.0, true, true);
     /// assert_eq!(ticker.current_value(), 40);
     ///
     /// ticker.soft_reset();
@@ -1933,7 +1927,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// ```
     /// use mirth_engine_tickers::Ticker;
     ///
-    /// let mut ticker = Ticker::<i32, f32>::new_mutlooper_custom(0, 40, 100, 1.0, true, true);
+    /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 40, 100, 1.0, true, true);
     /// ticker.tick(1.3);
     /// ticker.hard_reset();
     ///
@@ -2148,7 +2142,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// let looper = Ticker::<i32, f32>::new_looper(0, 10, 1.0, true);
     /// assert!(!looper.is_mutable());
     ///
-    /// let mut_looper = Ticker::<i32, f32>::new_mutlooper(0, 10, 1.0, true);
+    /// let mut_looper = Ticker::<i32, f32>::new_mut_looper(0, 10, 1.0, true);
     /// assert!(mut_looper.is_mutable());
     /// ```
     #[inline]
@@ -2163,6 +2157,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     }
     // ############################################################################################## //
 }
+
 
 
 /// Checks if a value falls within the provided minimum and maximum range (inclusive).
