@@ -1488,26 +1488,26 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// Will always return a positive value if the digit exists.
     ///
-    /// Will return -1 if the digit is NOT being used.
+    /// Will return `None` if the digit is NOT being used.
     ///
     /// #### What is DDA?
     /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
     /// from a number or if a digit just happens to be 0.
     ///
     /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `-1` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `6` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `1` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `0` — the hundreds-place exists but happens to be `0`.
+    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
-    /// The `-1` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
     #[inline]
-    pub fn digit_2_with_dda(&self) -> i8 {
+    pub fn digit_2_with_dda(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(10) {
-            ((self.current_value.absolute() / V::from_i32(10)) % V::from_i32(10)).as_i8()
+            Some(((self.current_value.absolute() / V::from_i32(10)) % V::from_i32(10)).as_i8())
         }
         else {
-            -1
+            None
         }
     }
 
@@ -1515,26 +1515,26 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// Will always return a positive value if the digit exists.
     ///
-    /// Will return -1 if the digit is NOT being used.
+    /// Will return `None` if the digit is NOT being used.
     ///
     /// #### What is DDA?
     /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
     /// from a number or if a digit just happens to be 0.
     ///
     /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `-1` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `6` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `1` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `0` — the hundreds-place exists but happens to be `0`.
+    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
-    /// The `-1` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
     #[inline]
-    pub fn digit_3_with_dda(&self) -> i8 {
+    pub fn digit_3_with_dda(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(100) {
-            ((self.current_value.absolute() / V::from_i32(100)) % V::from_i32(10)).as_i8()
+            Some(((self.current_value.absolute() / V::from_i32(100)) % V::from_i32(10)).as_i8())
         }
         else {
-            -1
+            None
         }
     }
 
@@ -1542,26 +1542,26 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// Will always return a positive value if the digit exists.
     ///
-    /// Will return -1 if the digit is NOT being used.
+    /// Will return `None` if the digit is NOT being used.
     ///
     /// #### What is DDA?
     /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
     /// from a number or if a digit just happens to be 0.
     ///
     /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `-1` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `6` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `1` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `0` — the hundreds-place exists but happens to be `0`.
+    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
-    /// The `-1` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
     #[inline]
-    pub fn digit_4_with_dda(&self) -> i8 {
+    pub fn digit_4_with_dda(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(1_000) {
-            ((self.current_value.absolute() / V::from_i32(1_000)) % V::from_i32(10)).as_i8()
+            Some(((self.current_value.absolute() / V::from_i32(1_000)) % V::from_i32(10)).as_i8())
         }
         else {
-            -1
+            None
         }
     }
 
@@ -1569,26 +1569,26 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// Will always return a positive value if the digit exists.
     ///
-    /// Will return -1 if the digit is NOT being used.
+    /// Will return `None` if the digit is NOT being used.
     ///
     /// #### What is DDA?
     /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
     /// from a number or if a digit just happens to be 0.
     ///
     /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `-1` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `6` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `1` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `0` — the hundreds-place exists but happens to be `0`.
+    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
-    /// The `-1` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
     #[inline]
-    pub fn digit_5_with_dda(&self) -> i8 {
+    pub fn digit_5_with_dda(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(10_000) {
-            ((self.current_value.absolute() / V::from_i32(10_000)) % V::from_i32(10)).as_i8()
+            Some(((self.current_value.absolute() / V::from_i32(10_000)) % V::from_i32(10)).as_i8())
         }
         else {
-            -1
+            None
         }
     }
 
@@ -1596,26 +1596,26 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// Will always return a positive value if the digit exists.
     ///
-    /// Will return -1 if the digit is NOT being used.
+    /// Will return `None` if the digit is NOT being used.
     ///
     /// #### What is DDA?
     /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
     /// from a number or if a digit just happens to be 0.
     ///
     /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `-1` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `6` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `1` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `0` — the hundreds-place exists but happens to be `0`.
+    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
-    /// The `-1` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
     #[inline]
-    pub fn digit_6_with_dda(&self) -> i8 {
+    pub fn digit_6_with_dda(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(100_000) {
-            ((self.current_value.absolute() / V::from_i32(100_000)) % V::from_i32(10)).as_i8()
+            Some(((self.current_value.absolute() / V::from_i32(100_000)) % V::from_i32(10)).as_i8())
         }
         else {
-            -1
+            None
         }
     }
 
@@ -1623,26 +1623,26 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// Will always return a positive value if the digit exists.
     ///
-    /// Will return -1 if the digit is NOT being used.
+    /// Will return `None` if the digit is NOT being used.
     ///
     /// #### What is DDA?
     /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
     /// from a number or if a digit just happens to be 0.
     ///
     /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `-1` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `6` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `1` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `0` — the hundreds-place exists but happens to be `0`.
+    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
-    /// The `-1` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
     #[inline]
-    pub fn digit_7_with_dda(&self) -> i8 {
+    pub fn digit_7_with_dda(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(1_000_000) {
-            ((self.current_value.absolute() / V::from_i32(1_000_000)) % V::from_i32(10)).as_i8()
+            Some(((self.current_value.absolute() / V::from_i32(1_000_000)) % V::from_i32(10)).as_i8())
         }
         else {
-            -1
+            None
         }
     }
 
@@ -1650,26 +1650,26 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// Will always return a positive value if the digit exists.
     ///
-    /// Will return -1 if the digit is NOT being used.
+    /// Will return `None` if the digit is NOT being used.
     ///
     /// #### What is DDA?
     /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
     /// from a number or if a digit just happens to be 0.
     ///
     /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `-1` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `6` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `1` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `0` — the hundreds-place exists but happens to be `0`.
+    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
-    /// The `-1` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
     #[inline]
-    pub fn digit_8_with_dda(&self) -> i8 {
+    pub fn digit_8_with_dda(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(10_000_000) {
-            ((self.current_value.absolute() / V::from_i32(10_000_000)) % V::from_i32(10)).as_i8()
+            Some(((self.current_value.absolute() / V::from_i32(10_000_000)) % V::from_i32(10)).as_i8())
         }
         else {
-            -1
+            None
         }
     }
 
@@ -1677,26 +1677,26 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// Will always return a positive value if the digit exists.
     ///
-    /// Will return -1 if the digit is NOT being used.
+    /// Will return `None` if the digit is NOT being used.
     ///
     /// #### What is DDA?
     /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
     /// from a number or if a digit just happens to be 0.
     ///
     /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `-1` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `6` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `1` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `0` — the hundreds-place exists but happens to be `0`.
+    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
-    /// The `-1` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
     #[inline]
-    pub fn digit_9_with_dda(&self) -> i8 {
+    pub fn digit_9_with_dda(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(100_000_000) {
-            ((self.current_value.absolute() / V::from_i32(100_000_000)) % V::from_i32(10)).as_i8()
+            Some(((self.current_value.absolute() / V::from_i32(100_000_000)) % V::from_i32(10)).as_i8())
         }
         else {
-            -1
+            None
         }
     }
     // ######################################################################################## //
@@ -1841,12 +1841,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
     // ################################### PERCENTAGE METHODS ################################### //
     /// Returns the exact percentage of completion from `start_value` to `end_value` as a floating point.
-    ///
-    /// A return value of `0.0` means `current_value` is at `start_value`, and `1.0` means it is
-    /// at `end_value`.
-    ///
-    /// #### Special Case
-    /// Returns `-1.0` if `start_value` and `end_value` are equal, as no meaningful range exists.
+    /// - A return value of `0.0` means `current_value` is at `start_value`,
+    /// - A return value of `1.0` means `current_value` is at `end_value`.
+    /// - A return value of `None` means `start_value` and `end_value` are equal.
     ///
     /// #### Example
     /// ```
@@ -1855,13 +1852,13 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 40, 100, 1.0, true, true);
     ///
     /// // Since it deals with floats, tolerate tiny inaccuracies
-    /// let percentage = ticker.percentage_completed();
+    /// let percentage = ticker.percentage_completed().unwrap();
     /// assert!((percentage - 0.4).abs() < f64::EPSILON);
     /// ```
-    pub fn percentage_completed(&self) -> f64 {
+    pub fn percentage_completed(&self) -> Option<f64> {
 
         if self.start_value == self.end_value {
-            return -1.0;
+            return None;
         }
 
         let start: f64 = self.start_value.as_f64();
@@ -1870,16 +1867,13 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
         let range_reciprocal: f64 = 1.0 / (end - start);
 
-        (current - start) * range_reciprocal
+        Some((current - start) * range_reciprocal)
     }
 
     /// Returns the remaining percentage needed to reach `end_value` as a floating point.
-    ///
-    /// A return value of `0.0` means `current_value` is at `end_value`, and `1.0` means it is
-    /// at `start_value`.
-    ///
-    /// #### Special Case
-    /// Returns `-1.0` if `start_value` and `end_value` are equal, as no meaningful range exists.
+    /// - A return value of `0.0` means `current_value` is at `end_value`,
+    /// - A return value of `1.0` means `current_value` is at `start_value`.
+    /// - A return value of `None` means `start_value` and `end_value` are equal.
     ///
     /// #### Example
     /// ```
@@ -1888,13 +1882,13 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 25, 100, 1.0, true, true);
     ///
     /// // Since it deals with floats, tolerate tiny inaccuracies
-    /// let remaining = ticker.percentage_remaining();
+    /// let remaining = ticker.percentage_remaining().unwrap();
     /// assert!((remaining - 0.75).abs() < f64::EPSILON);
     /// ```
-    pub fn percentage_remaining(&self) -> f64 {
+    pub fn percentage_remaining(&self) -> Option<f64> {
 
         if self.start_value == self.end_value {
-            return -1.0;
+            return None;
         }
 
         let start: f64 = self.start_value.as_f64();
@@ -1903,7 +1897,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
         let range_reciprocal: f64 = 1.0 / (end - start);
 
-        (end - current) * range_reciprocal
+        Some((end - current) * range_reciprocal)
     }
     // ########################################################################################## //
 
