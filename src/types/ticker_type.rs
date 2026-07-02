@@ -342,7 +342,7 @@ pub enum TickerBehaviors {
 ///     - No fields can be changed directly or indirectly.
 /// - **`Ticker is Mutable or Immutable`**
 ///     - current_value and stored_time will be changed if a ticker is ticking.  How and when these fields change is based on the ticker's boolean fields, what behavior the ticker is set to, and when .tick() gets called.
-///     - Do not regard current_value and stored_time's change from .tick() as a factor of mutability.  Tickers are purposed to tick, hence the changing of such fields inside ticking should ALWAYS be expected.
+///     - Do not regard current_value and stored_time's change from .tick() as a factor of mutability.  Tickers are purposed to tick, hence the changing of such fields when ticking should always be expected unless a ticker is paused or the behavior dictates that no change is to occur.
 ///
 /// ---
 ///

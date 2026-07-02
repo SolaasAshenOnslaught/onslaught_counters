@@ -9,7 +9,9 @@ use crate::systems::*;
 ///
 /// Will enable said reflections and systems depending on which features have been activated
 /// using the "cargo --features" command.  By default, reflections and systems are turned on.
+#[cfg(any(feature = "ticker_reflect", feature = "ticker_systems", feature = "ticker_serialize"))]
 pub struct Tickers {}
+#[cfg(any(feature = "ticker_reflect", feature = "ticker_systems", feature = "ticker_serialize"))]
 impl Plugin for Tickers {
     fn build(&self, app: &mut App) {
 

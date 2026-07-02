@@ -20,7 +20,7 @@ fn main() {
         .add_plugins(Tickers{})
 
         // Comment this add_system line to prevent the master ticker from spawning.
-        .add_systems(Startup, spawn_master_ticker)
+        .add_systems(Startup, spawn_custom_ticker)
 
         // Comment this add_system line to prevent the variant tickers from spawning.
         .add_systems(Startup, spawn_ticker_variants)
@@ -30,10 +30,9 @@ fn main() {
         .run();
 }
 
-fn spawn_master_ticker(mut commands: Commands) {
+fn spawn_custom_ticker(mut commands: Commands) {
 
-    // MASTER TICKER
-    // Change the fields to whatever you want to test any kind of Ticker combination.
+    // Change the fields to whatever you want to test any kind of ticker.
     commands.spawn(Ticker::<i32, f32>::new(
         0,
         5,

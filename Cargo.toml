@@ -37,12 +37,12 @@ testing_tools = ["mirth_engine_testing_tools"]
 ########################### TICKER FEATURES ###############################
 
 # Enable this to make all Ticker types reflectable in the Tickers plugin.
-# Enabling this will add the bevy_reflect dependency.
+# Enabling this will add the bevy_reflect dependency and allow for the Tickers plugin to be usable.
 ticker_reflect = ["bevy_reflect", "bevy_app/bevy_reflect"]
 
 # Enable this if you want to serialize and deserialize Ticker data (e.g. for a save system).
-# Enabling this will enable ticker_reflect and the serde dependency as they are required for
-# serialization to work properly.
+# Enabling this will enable ticker_reflect, add the serde dependency, and allow for the Tickers plugin to be usable as
+# they are required for serialization to work properly.
 ticker_serialize = ["serde", "ticker_reflect"]
 
 # Enable this to activate all Ticker systems inside the Tickers plugin; best to use when you don't plan on making custom Ticker systems.
