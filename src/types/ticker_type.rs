@@ -237,13 +237,13 @@ pub enum TickerBehavior {
 ///
 /// - **`start_value`**
 ///     - Represents the beginning value of a ticker and acts as one of the boundaries for current_value.
-///     - Can be manipulated through addition and setter methods if the ticker is mutable.
+///     - Can be manipulated through sum and setter methods if the ticker is mutable.
 ///
 /// - **`current_value`**
 ///     - Represents the value a ticker is currently at.
 ///     - current_value is bound to the range that start_value and end_value create.
 ///     - Ticking causes current_value to change, even if the ticker is immutable.
-///     - Can be manipulated through addition and setter methods if the ticker is mutable.
+///     - Can be manipulated through sum and setter methods if the ticker is mutable.
 ///     - **For Looping Tickers**
 ///         - current_value will be set to start_value when a loop triggers.
 ///         - current_value hitting end_value will cause a loop to trigger.
@@ -252,12 +252,12 @@ pub enum TickerBehavior {
 ///
 /// - **`end_value`**
 ///     - Represents the ending value of a ticker and acts as one of the boundaries for current_value.
-///     - Can be manipulated through addition and setter methods if the ticker is mutable.
+///     - Can be manipulated through sum and setter methods if the ticker is mutable.
 ///
 /// - **`time_interval`**
 ///     - The amount of time that it takes for current_value to change by 1.
 ///     - Use this field to slow or speed up current_value's change.
-///     - Can be manipulated through addition and setter methods if the ticker is mutable.
+///     - Can be manipulated through sum and setter methods if the ticker is mutable.
 ///
 /// - **`stored_time`**
 ///     - Represents the remainder of time from the last .tick() call.
@@ -1154,159 +1154,41 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
 
     // ################################# DIGIT METHODS ######################################## //
-    /// Returns the digit in the ones-place of current_value.
+    /// Returns the digit that is 1 place left of the decimal point (ones place) of `current_value`.
     ///
-    /// Will always return a positive value.
-    ///
-    /// #### Small Note
-    /// It is NOT possible for the ones digit to be dropped, hence the reason why this method has no
-    /// digit-drop accounting version - there is always a ones-place.
-    ///
-    /// #### No Conditional in Implementation?
-    /// This digit method does not need to check if current_value is holding a value that contains this digit
-    /// since all integer types can contain at least 3 digits.  0 will still be returned if the digit isn't being used.
+    /// Will always return a positive value.  A return of `None` is impossible here since the
+    /// ones-place always exists.
     #[inline]
-    pub fn digit_1(&self) -> i8 {
-        (self.current_value.absolute() % V::from_i32(10)).as_i8()
+    pub fn digit_1(&self) -> Option<i8> {
+        Some((self.current_value.absolute() % V::from_i32(10)).as_i8())
     }
 
-    /// Returns the digit in the tens-place of current_value.
+    /// Returns the digit that is 2 places left of the decimal point (tens place) of `current_value`.
     ///
-    /// Will always return a positive value.
-    ///
-    /// Will return a 0 if the digit doesn't exist.
-    ///
-    /// #### No Conditional in Implementation?
-    /// This digit method does not need to check if current_value is holding a value that contains this digit
-    /// since all integer types can contain at least 3 digits.  0 will still be returned if the digit isn't being used.
-    #[inline]
-    pub fn digit_2(&self) -> i8 {
-        ((self.current_value.absolute() / V::from_i32(10)) % V::from_i32(10)).as_i8()
-    }
-
-    /// Returns the digit in the hundreds-place of current_value.
-    ///
-    /// Will always return a positive value.
-    ///
-    /// Will return a 0 if the digit doesn't exist.
-    ///
-    /// #### No Conditional in Implementation?
-    /// This digit method does not need to check if current_value is holding a value that contains this digit
-    /// since all integer types can contain at least 3 digits.  0 will still be returned if the digit isn't being used.
-    #[inline]
-    pub fn digit_3(&self) -> i8 {
-        ((self.current_value.absolute() / V::from_i32(100)) % V::from_i32(10)).as_i8()
-    }
-
-    /// Returns the digit in the thousands-place of current_value.
-    ///
-    /// Will always return a positive value.
-    ///
-    /// Will return a 0 if the digit doesn't exist.
-    #[inline]
-    pub fn digit_4(&self) -> i8 {
-        if self.current_value.absolute() >= V::from_i32(1_000) {
-            ((self.current_value.absolute() / V::from_i32(1_000)) % V::from_i32(10)).as_i8()
-        }
-        else {
-            0
-        }
-    }
-
-    /// Returns the digit in the ten-thousands-place of current_value.
-    ///
-    /// Will always return a positive value.
-    ///
-    /// Will return a 0 if the digit doesn't exist.
-    #[inline]
-    pub fn digit_5(&self) -> i8 {
-        if self.current_value.absolute() >= V::from_i32(10_000) {
-            ((self.current_value.absolute() / V::from_i32(10_000)) % V::from_i32(10)).as_i8()
-        }
-        else {
-            0
-        }
-    }
-
-    /// Returns the digit in the hundred-thousands-place of current_value.
-    ///
-    /// Will always return a positive value.
-    ///
-    /// Will return a 0 if the digit doesn't exist.
-    #[inline]
-    pub fn digit_6(&self) -> i8 {
-        if self.current_value.absolute() >= V::from_i32(100_000) {
-            ((self.current_value.absolute() / V::from_i32(100_000)) % V::from_i32(10)).as_i8()
-        }
-        else {
-            0
-        }
-    }
-
-    /// Returns the digit in the millions-place of current_value.
-    ///
-    /// Will always return a positive value.
-    ///
-    /// Will return a 0 if the digit doesn't exist.
-    #[inline]
-    pub fn digit_7(&self) -> i8 {
-        if self.current_value.absolute() >= V::from_i32(1_000_000) {
-            ((self.current_value.absolute() / V::from_i32(1_000_000)) % V::from_i32(10)).as_i8()
-        }
-        else {
-            0
-        }
-    }
-
-    /// Returns the digit in the ten-millions-place of current_value.
-    ///
-    /// Will always return a positive value.
-    ///
-    /// Will return a 0 if the digit doesn't exist.
-    #[inline]
-    pub fn digit_8(&self) -> i8 {
-        if self.current_value.absolute() >= V::from_i32(10_000_000) {
-            ((self.current_value.absolute() / V::from_i32(10_000_000)) % V::from_i32(10)).as_i8()
-        }
-        else {
-            0
-        }
-    }
-
-    /// Returns the digit in the hundred-millions-place of current_value.
-    ///
-    /// Will always return a positive value.
-    ///
-    /// Will return a 0 if the digit doesn't exist.
-    #[inline]
-    pub fn digit_9(&self) -> i8 {
-        if self.current_value.absolute() >= V::from_i32(100_000_000) {
-            ((self.current_value.absolute() / V::from_i32(100_000_000)) % V::from_i32(10)).as_i8()
-        }
-        else {
-            0
-        }
-    }
-
-    /// Returns the digit in the tens-place of current_value.
-    ///
-    /// Will always return a positive value if the digit exists.
+    /// Will return a positive value if the digit exists.
     ///
     /// Will return `None` if the digit is NOT being used.
     ///
-    /// #### What is DDA?
-    /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
-    /// from a number or if a digit just happens to be 0.
-    ///
-    /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
+    /// #### Breakdown
+    /// - If `current_value` is `6`, `digit_2` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
     /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    ///
+    /// #### What If I Want Something Instead of None?
+    /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
+    /// want.  Here's an example using .digit_2():
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    ///
+    /// // current_value is set to 6, so there is no 2nd digit in current_value
+    /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
+    /// assert_eq!(ticker.digit_2().unwrap_or(0), 0);
+    /// assert_eq!(ticker.digit_1().unwrap(), 6)
     #[inline]
-    pub fn digit_2_with_dda(&self) -> Option<i8> {
+    pub fn digit_2(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(10) {
             Some(((self.current_value.absolute() / V::from_i32(10)) % V::from_i32(10)).as_i8())
         }
@@ -1315,25 +1197,32 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         }
     }
 
-    /// Returns the digit in the hundreds-place of current_value.
+    /// Returns the digit that is 3 places left of the decimal point (hundreds place) of `current_value`.
     ///
     /// Will always return a positive value if the digit exists.
     ///
     /// Will return `None` if the digit is NOT being used.
     ///
-    /// #### What is DDA?
-    /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
-    /// from a number or if a digit just happens to be 0.
-    ///
-    /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
+    /// #### Breakdown
+    /// - If `current_value` is `6`, `digit_2` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
     /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    ///
+    /// #### What If I Want Something Instead of None?
+    /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
+    /// want.  Here's an example using .digit_2():
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    ///
+    /// // current_value is set to 6, so there is no 2nd digit in current_value
+    /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
+    /// assert_eq!(ticker.digit_2().unwrap_or(0), 0);
+    /// assert_eq!(ticker.digit_1().unwrap(), 6)
     #[inline]
-    pub fn digit_3_with_dda(&self) -> Option<i8> {
+    pub fn digit_3(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(100) {
             Some(((self.current_value.absolute() / V::from_i32(100)) % V::from_i32(10)).as_i8())
         }
@@ -1342,25 +1231,32 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         }
     }
 
-    /// Returns the digit in the thousands-place of current_value.
+    /// Returns the digit that is 4 places left of the decimal point (thousands place) of `current_value`.
     ///
     /// Will always return a positive value if the digit exists.
     ///
     /// Will return `None` if the digit is NOT being used.
     ///
-    /// #### What is DDA?
-    /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
-    /// from a number or if a digit just happens to be 0.
-    ///
-    /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
+    /// #### Breakdown
+    /// - If `current_value` is `6`, `digit_2` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
     /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    ///
+    /// #### What If I Want Something Instead of None?
+    /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
+    /// want.  Here's an example using .digit_2():
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    ///
+    /// // current_value is set to 6, so there is no 2nd digit in current_value
+    /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
+    /// assert_eq!(ticker.digit_2().unwrap_or(0), 0);
+    /// assert_eq!(ticker.digit_1().unwrap(), 6)
     #[inline]
-    pub fn digit_4_with_dda(&self) -> Option<i8> {
+    pub fn digit_4(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(1_000) {
             Some(((self.current_value.absolute() / V::from_i32(1_000)) % V::from_i32(10)).as_i8())
         }
@@ -1369,25 +1265,32 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         }
     }
 
-    /// Returns the digit in the ten-thousands-place of current_value.
+    /// Returns the digit that is 5 places left of the decimal point (ten-thousands place) of `current_value`.
     ///
     /// Will always return a positive value if the digit exists.
     ///
     /// Will return `None` if the digit is NOT being used.
     ///
-    /// #### What is DDA?
-    /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
-    /// from a number or if a digit just happens to be 0.
-    ///
-    /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
+    /// #### Breakdown
+    /// - If `current_value` is `6`, `digit_2` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
     /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    ///
+    /// #### What If I Want Something Instead of None?
+    /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
+    /// want.  Here's an example using .digit_2():
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    ///
+    /// // current_value is set to 6, so there is no 2nd digit in current_value
+    /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
+    /// assert_eq!(ticker.digit_2().unwrap_or(0), 0);
+    /// assert_eq!(ticker.digit_1().unwrap(), 6)
     #[inline]
-    pub fn digit_5_with_dda(&self) -> Option<i8> {
+    pub fn digit_5(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(10_000) {
             Some(((self.current_value.absolute() / V::from_i32(10_000)) % V::from_i32(10)).as_i8())
         }
@@ -1396,25 +1299,32 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         }
     }
 
-    /// Returns the digit in the hundred-thousands-place of current_value.
+    /// Returns the digit that is 6 places left of the decimal point (hundred-thousands place) of `current_value`.
     ///
     /// Will always return a positive value if the digit exists.
     ///
     /// Will return `None` if the digit is NOT being used.
     ///
-    /// #### What is DDA?
-    /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
-    /// from a number or if a digit just happens to be 0.
-    ///
-    /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
+    /// #### Breakdown
+    /// - If `current_value` is `6`, `digit_2` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
     /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    ///
+    /// #### What If I Want Something Instead of None?
+    /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
+    /// want.  Here's an example using .digit_2():
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    ///
+    /// // current_value is set to 6, so there is no 2nd digit in current_value
+    /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
+    /// assert_eq!(ticker.digit_2().unwrap_or(0), 0);
+    /// assert_eq!(ticker.digit_1().unwrap(), 6)
     #[inline]
-    pub fn digit_6_with_dda(&self) -> Option<i8> {
+    pub fn digit_6(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(100_000) {
             Some(((self.current_value.absolute() / V::from_i32(100_000)) % V::from_i32(10)).as_i8())
         }
@@ -1423,25 +1333,32 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         }
     }
 
-    /// Returns the digit in the millions-place of current_value.
+    /// Returns the digit that is 7 places left of the decimal point (millions place) of `current_value`.
     ///
     /// Will always return a positive value if the digit exists.
     ///
     /// Will return `None` if the digit is NOT being used.
     ///
-    /// #### What is DDA?
-    /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
-    /// from a number or if a digit just happens to be 0.
-    ///
-    /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
+    /// #### Breakdown
+    /// - If `current_value` is `6`, `digit_2` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
     /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    ///
+    /// #### What If I Want Something Instead of None?
+    /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
+    /// want.  Here's an example using .digit_2():
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    ///
+    /// // current_value is set to 6, so there is no 2nd digit in current_value
+    /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
+    /// assert_eq!(ticker.digit_2().unwrap_or(0), 0);
+    /// assert_eq!(ticker.digit_1().unwrap(), 6)
     #[inline]
-    pub fn digit_7_with_dda(&self) -> Option<i8> {
+    pub fn digit_7(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(1_000_000) {
             Some(((self.current_value.absolute() / V::from_i32(1_000_000)) % V::from_i32(10)).as_i8())
         }
@@ -1450,25 +1367,32 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         }
     }
 
-    /// Returns the digit in the ten-millions-place of current_value.
+    /// Returns the digit that is 8 places left of the decimal point (ten-millions place) of `current_value`.
     ///
     /// Will always return a positive value if the digit exists.
     ///
     /// Will return `None` if the digit is NOT being used.
     ///
-    /// #### What is DDA?
-    /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
-    /// from a number or if a digit just happens to be 0.
-    ///
-    /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
+    /// #### Breakdown
+    /// - If `current_value` is `6`, `digit_2` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
     /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    ///
+    /// #### What If I Want Something Instead of None?
+    /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
+    /// want.  Here's an example using .digit_2():
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    ///
+    /// // current_value is set to 6, so there is no 2nd digit in current_value
+    /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
+    /// assert_eq!(ticker.digit_2().unwrap_or(0), 0);
+    /// assert_eq!(ticker.digit_1().unwrap(), 6)
     #[inline]
-    pub fn digit_8_with_dda(&self) -> Option<i8> {
+    pub fn digit_8(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(10_000_000) {
             Some(((self.current_value.absolute() / V::from_i32(10_000_000)) % V::from_i32(10)).as_i8())
         }
@@ -1477,27 +1401,68 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         }
     }
 
-    /// Returns the digit in the hundred-millions-place of current_value.
+    /// Returns the digit that is 9 places left of the decimal point (hundred-millions place) of `current_value`.
     ///
     /// Will always return a positive value if the digit exists.
     ///
     /// Will return `None` if the digit is NOT being used.
     ///
-    /// #### What is DDA?
-    /// DDA stands for Digit Drop Accounting.  It can be used to determine if a digit has been dropped
-    /// from a number or if a digit just happens to be 0.
-    ///
-    /// #### Example
-    /// - If `current_value` is `6`, `digit_2_with_dda` returns `None` — no tens-place exists.
-    /// - If `current_value` is `63`, `digit_2_with_dda` returns `Some(6)` — the tens-place exists and is `6`.
-    /// - If `current_value` is `103`, `digit_3_with_dda` returns `Some(1)` — the hundreds-place exists and is `1`.
-    /// - If `current_value` is `1003`, `digit_3_with_dda` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
+    /// #### Breakdown
+    /// - If `current_value` is `6`, `digit_2` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
     ///
     /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    ///
+    /// #### What If I Want Something Instead of None?
+    /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
+    /// want.  Here's an example using .digit_2():
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    ///
+    /// // current_value is set to 6, so there is no 2nd digit in current_value
+    /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
+    /// assert_eq!(ticker.digit_2().unwrap_or(0), 0);
+    /// assert_eq!(ticker.digit_1().unwrap(), 6)
     #[inline]
-    pub fn digit_9_with_dda(&self) -> Option<i8> {
+    pub fn digit_9(&self) -> Option<i8> {
         if self.current_value.absolute() >= V::from_i32(100_000_000) {
             Some(((self.current_value.absolute() / V::from_i32(100_000_000)) % V::from_i32(10)).as_i8())
+        }
+        else {
+            None
+        }
+    }
+
+    /// Returns the digit that is 10 places left of the decimal point (billions place) of `current_value`.
+    ///
+    /// Will always return a positive value if the digit exists.
+    ///
+    /// Will return `None` if the digit is NOT being used.
+    ///
+    /// #### Breakdown
+    /// - If `current_value` is `6`, `digit_2` returns `None` — no tens-place exists.
+    /// - If `current_value` is `63`, `digit_2` returns `Some(6)` — the tens-place exists and is `6`.
+    /// - If `current_value` is `103`, `digit_3` returns `Some(1)` — the hundreds-place exists and is `1`.
+    /// - If `current_value` is `1003`, `digit_3` returns `Some(0)` — the hundreds-place exists but happens to be `0`.
+    ///
+    /// The `None` sentinel allows you to differentiate between a digit that is absent and a digit that is simply `0`.
+    ///
+    /// #### What If I Want Something Instead of None?
+    /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
+    /// want.  Here's an example using .digit_2():
+    /// ```
+    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    ///
+    /// // current_value is set to 6, so there is no 2nd digit in current_value
+    /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
+    /// assert_eq!(ticker.digit_2().unwrap_or(0), 0);
+    /// assert_eq!(ticker.digit_1().unwrap(), 6)
+    #[inline]
+    pub fn digit_10(&self) -> Option<i8> {
+        if self.current_value.absolute() >= V::from_i32(1_000_000_000) {
+            Some(((self.current_value.absolute() / V::from_i32(1_000_000_000)) % V::from_i32(10)).as_i8())
         }
         else {
             None
@@ -1507,12 +1472,12 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 
 
 
-    // ################################### ADD METHODS ######################################## //
+    // ################################### SUM METHODS ######################################## //
     /// Adds to the `start_value` of the ticker by the passed value.  Can take in negatives for subtraction.
     /// Will not let the result of summing cause overflow or wrapping; results will always be within
     /// `V::MIN` to `V::MAX` (inclusive).
     ///
-    /// #### What Happens If Adding To start_value Pushes current_value Out of Bounds?
+    /// #### What Happens If Summing To start_value Pushes current_value Out of Bounds?
     /// If the new `start_value` shifts the valid range such that `current_value` is left outside
     /// the boundaries, `current_value` is automatically clamped to the nearest valid edge.
     ///
@@ -1522,19 +1487,19 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// // Case 1: Increasing start_value shifts the lower bound up, clamping current_value
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 20, 100, 1.0, true, true);
-    /// ticker.add_to_start_value(40); // New start_value becomes 40
+    /// ticker.sum_to_start_value(40); // New start_value becomes 40
     ///
     /// assert_eq!(ticker.start_value(), 40);
     /// assert_eq!(ticker.current_value(), 40); // Clamped from 20 up to 40
     ///
     /// // Case 2: Swapping directions where start > end
     /// let mut ticker_down = Ticker::<i32, f32>::new_looper_custom(100, 90, 50, 1.0, false, true);
-    /// ticker_down.add_to_start_value(-20); // New start_value becomes 80 (Range is now 80 down to 50)
+    /// ticker_down.sum_to_start_value(-20); // New start_value becomes 80 (Range is now 80 down to 50)
     ///
     /// assert_eq!(ticker_down.start_value(), 80);
     /// assert_eq!(ticker_down.current_value(), 80); // Clamped from 90 down to 80
     /// ```
-    pub fn add_to_start_value(&mut self, value: V) {
+    pub fn sum_to_start_value(&mut self, value: V) {
         // 1. Calculate the new start value safely.
         self.start_value = self.start_value.sat_add(value).clamp(V::MIN, V::MAX);
 
@@ -1555,11 +1520,11 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// use mirth_engine_tickers::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 40, 100, 1.0, true, true);
-    /// ticker.add_to_current_value(15);
+    /// ticker.sum_to_current_value(15);
     /// assert_eq!(ticker.current_value(), 55);
     /// ```
     #[inline]
-    pub fn add_to_current_value(&mut self, value: V) {
+    pub fn sum_to_current_value(&mut self, value: V) {
         let min = self.start_value.min(self.end_value);
         let max = self.start_value.max(self.end_value);
         self.current_value = self.current_value.sat_add(value).clamp(min, max);
@@ -1569,7 +1534,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Will not let the result of summing cause overflow or wrapping; results will always be within
     /// `V::MIN` to `V::MAX` (inclusive).
     ///
-    /// #### What Happens If Adding To end_value Pushes current_value Out of Bounds?
+    /// #### What Happens If Summing To end_value Pushes current_value Out of Bounds?
     /// If the new `end_value` shifts the valid range such that `current_value` is left outside
     /// the boundaries, `current_value` is automatically clamped to the nearest valid edge.
     ///
@@ -1579,18 +1544,18 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// // Case 1: Shrinking the range pushes current_value out
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 80, 100, 1.0, true, true);
-    /// ticker.add_to_end_value(-50); // New end_value becomes 50
+    /// ticker.sum_to_end_value(-50); // New end_value becomes 50
     ///
     /// assert_eq!(ticker.end_value(), 50);
     /// assert_eq!(ticker.current_value(), 50); // Clamped from 80 down to 50
     ///
     /// // Case 2: Swapping directions where start > end
     /// let mut ticker_down = Ticker::<i32, f32>::new_looper_custom(100, 55, 50, 1.0, false, true);
-    /// ticker_down.add_to_end_value(10); // New end_value becomes 60 (Range is now 100 down to 60)
+    /// ticker_down.sum_to_end_value(10); // New end_value becomes 60 (Range is now 100 down to 60)
     /// assert_eq!(ticker_down.end_value(), 60);
     /// assert_eq!(ticker_down.current_value(), 60); // Clamped from 55 up to 60
     /// ```
-    pub fn add_to_end_value(&mut self, value: V) {
+    pub fn sum_to_end_value(&mut self, value: V) {
         // 1. Calculate the new end value safely.
         self.end_value = self.end_value.sat_add(value).clamp(V::MIN, V::MAX);
 
@@ -1620,15 +1585,15 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// let mut ticker = Ticker::<i32, f32>::new_looper(0, 10, 1.0, true);
     ///
     /// // Add time to the interval
-    /// ticker.add_to_time_interval(0.5);
+    /// ticker.sum_to_time_interval(0.5);
     /// assert_eq!(ticker.time_interval(), 1.5);
     ///
     /// // Value cannot fall below or equal to 0.0, so subtracting too much will clamp it
-    /// ticker.add_to_time_interval(-5.0);
+    /// ticker.sum_to_time_interval(-5.0);
     /// assert!(ticker.time_interval() > 0.0);
     /// ```
     #[inline]
-    pub fn add_to_time_interval(&mut self, value: P) {
+    pub fn sum_to_time_interval(&mut self, value: P) {
         self.time_interval = (self.time_interval + value).clamp(P::MIN_POSITIVE, P::MAX);
     }
     // ########################################################################################## //

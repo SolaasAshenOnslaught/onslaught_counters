@@ -124,8 +124,7 @@
 
                         <!-- ToC : Ticker Digit Methods -->
                         <div class="nav_box_4">
-                            <a href="#ticker-digit-methods">Ticker Digit Methods</a>
-                            <div class="nav_box_5"><a href="#digit-1">digit_1</a></div>
+                            <a href="#ticker-digit-methods">Ticker Digit-Drop Accounting Methods</a>
                             <div class="nav_box_5"><a href="#digit-2">digit_2</a></div>
                             <div class="nav_box_5"><a href="#digit-3">digit_3</a></div>
                             <div class="nav_box_5"><a href="#digit-4">digit_4</a></div>
@@ -136,26 +135,13 @@
                             <div class="nav_box_5"><a href="#digit-9">digit_9</a></div>
                         </div>
 
-                        <!-- ToC : Ticker Digit-Drop Accounting Methods -->
-                        <div class="nav_box_4">
-                            <a href="#ticker-digit-drop-accounting-methods">Ticker Digit-Drop Accounting Methods</a>
-                            <div class="nav_box_5"><a href="#digit-2-with-dda">digit_2_with_dda</a></div>
-                            <div class="nav_box_5"><a href="#digit-3-with-dda">digit_3_with_dda</a></div>
-                            <div class="nav_box_5"><a href="#digit-4-with-dda">digit_4_with_dda</a></div>
-                            <div class="nav_box_5"><a href="#digit-5-with-dda">digit_5_with_dda</a></div>
-                            <div class="nav_box_5"><a href="#digit-6-with-dda">digit_6_with_dda</a></div>
-                            <div class="nav_box_5"><a href="#digit-7-with-dda">digit_7_with_dda</a></div>
-                            <div class="nav_box_5"><a href="#digit-8-with-dda">digit_8_with_dda</a></div>
-                            <div class="nav_box_5"><a href="#digit-9-with-dda">digit_9_with_dda</a></div>
-                        </div>
-
                         <!-- ToC : Ticker Add Methods -->
                         <div class="nav_box_4">
-                            <a href="#ticker-add-methods">Ticker Add Methods</a>
-                            <div class="nav_box_5"><a href="#add-to-start-value-v">add_to_start_value</a></div>
-                            <div class="nav_box_5"><a href="#add-to-current-value-v">add_to_current_value</a></div>
-                            <div class="nav_box_5"><a href="#add-to-end-value-v">add_to_end_value</a></div>
-                            <div class="nav_box_5"><a href="#add-to-time-interval-p">add_to_time_interval</a></div>
+                            <a href="#ticker-sum-methods">Ticker Add Methods</a>
+                            <div class="nav_box_5"><a href="#sum-to-start-value-v">sum_to_start_value</a></div>
+                            <div class="nav_box_5"><a href="#sum-to-current-value-v">sum_to_current_value</a></div>
+                            <div class="nav_box_5"><a href="#sum-to-end-value-v">sum_to_end_value</a></div>
+                            <div class="nav_box_5"><a href="#sum-to-time-interval-p">sum_to_time_interval</a></div>
                         </div>
 
                         <!-- ToC : Ticker Percentage Methods -->
@@ -652,117 +638,62 @@
 
                         <!-- Ticker Digit Methods -->
                         <div class="block_4">
-                            <h4 id="ticker-digit-methods">Ticker Digit Methods</h4>
+                            <h4 id="ticker-digit-drop-accounting-methods">Ticker Digit Methods</h4>
+                            <p>These methods have the ability to account for whether or not a digit exists within <code>current_value</code>.  Which is why they return an <code>Option&lt;i8&gt;</code>.</p>
+                            <p>In the case that a certain digit does not exist, the value of <code>None</code> is returned.</p>
 
                             <!-- digit_1 -->
                             <div class="block_5">
                                 <h5 id="digit-1">.digit_1()</h5>
-                                <p>Returns the digit in the ones-place of <code>current_value</code>. Always positive.</p>
+                                <p>Returns the digit in the ones-place of <code>current_value</code> as <code>Some(positive_i8)</code>.</p>
+                                <p>It is impossible to return <code>None</code> here since the ones-place always exists.</p>
                             </div>
 
                             <!-- digit_2 -->
                             <div class="block_5">
                                 <h5 id="digit-2">.digit_2()</h5>
-                                <p>Returns the digit in the tens-place of <code>current_value</code>. Always positive; returns 0 if the digit doesn't exist.</p>
+                                <p>Returns the digit in the tens-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
                             </div>
 
                             <!-- digit_3 -->
                             <div class="block_5">
                                 <h5 id="digit-3">.digit_3()</h5>
-                                <p>Returns the digit in the hundreds-place of <code>current_value</code>. Always positive; returns 0 if the digit doesn't exist.</p>
+                                <p>Returns the digit in the hundreds-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
                             </div>
 
                             <!-- digit_4 -->
                             <div class="block_5">
                                 <h5 id="digit-4">.digit_4()</h5>
-                                <p>Returns the digit in the thousands-place of <code>current_value</code>. Always positive; returns 0 if the digit doesn't exist.</p>
+                                <p>Returns the digit in the thousands-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
                             </div>
 
                             <!-- digit_5 -->
                             <div class="block_5">
                                 <h5 id="digit-5">.digit_5()</h5>
-                                <p>Returns the digit in the ten-thousands-place of <code>current_value</code>. Always positive; returns 0 if the digit doesn't exist.</p>
+                                <p>Returns the digit in the ten-thousands-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
                             </div>
 
                             <!-- digit_6 -->
                             <div class="block_5">
                                 <h5 id="digit-6">.digit_6()</h5>
-                                <p>Returns the digit in the hundred-thousands-place of <code>current_value</code>. Always positive; returns 0 if the digit doesn't exist.</p>
+                                <p>Returns the digit in the hundred-thousands-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
                             </div>
 
                             <!-- digit_7 -->
                             <div class="block_5">
                                 <h5 id="digit-7">.digit_7()</h5>
-                                <p>Returns the digit in the millions-place of <code>current_value</code>. Always positive; returns 0 if the digit doesn't exist.</p>
+                                <p>Returns the digit in the millions-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
                             </div>
 
                             <!-- digit_8 -->
                             <div class="block_5">
                                 <h5 id="digit-8">.digit_8()</h5>
-                                <p>Returns the digit in the ten-millions-place of <code>current_value</code>. Always positive; returns 0 if the digit doesn't exist.</p>
+                                <p>Returns the digit in the ten-millions-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
                             </div>
 
                             <!-- digit_9 -->
                             <div class="block_5">
                                 <h5 id="digit-9">.digit_9()</h5>
-                                <p>Returns the digit in the hundred-millions-place of <code>current_value</code>. Always positive; returns 0 if the digit doesn't exist.</p>
-                            </div>
-
-                        </div>
-
-
-
-                        <!-- Ticker Digit DDA Methods -->
-                        <div class="block_4">
-                            <h4 id="ticker-digit-drop-accounting-methods">Ticker Digit-Drop Accounting Methods</h4>
-                            <p>Digit-Drop Accounting (DDA) is what tells you the difference between a digit that is absent and a digit that is simply 0.  For any Digit DDA method, if a specified digit exists within <code>current_value</code>, its value is returned as <code>Some(positive_i8)</code>.  If the digit doesn't exist, then <code>None</code> is returned.</p>
-                            <p>The ones-place always exists, so there is no DDA method for the first digit.</p>
-
-                            <!-- digit_2_with_dda -->
-                            <div class="block_5">
-                                <h5 id="digit-2-with-dda">.digit_2_with_dda()</h5>
-                                <p>Returns the digit in the tens-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
-                            </div>
-
-                            <!-- digit_3_with_dda -->
-                            <div class="block_5">
-                                <h5 id="digit-3-with-dda">.digit_3_with_dda()</h5>
-                                <p>Returns the digit in the hundreds-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
-                            </div>
-
-                            <!-- digit_4_with_dda -->
-                            <div class="block_5">
-                                <h5 id="digit-4-with-dda">.digit_4_with_dda()</h5>
-                                <p>Returns the digit in the thousands-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
-                            </div>
-
-                            <!-- digit_5_with_dda -->
-                            <div class="block_5">
-                                <h5 id="digit-5-with-dda">.digit_5_with_dda()</h5>
-                                <p>Returns the digit in the ten-thousands-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
-                            </div>
-
-                            <!-- digit_6_with_dda -->
-                            <div class="block_5">
-                                <h5 id="digit-6-with-dda">.digit_6_with_dda()</h5>
-                                <p>Returns the digit in the hundred-thousands-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
-                            </div>
-
-                            <!-- digit_7_with_dda -->
-                            <div class="block_5">
-                                <h5 id="digit-7-with-dda">.digit_7_with_dda()</h5>
-                                <p>Returns the digit in the millions-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
-                            </div>
-
-                            <!-- digit_8_with_dda -->
-                            <div class="block_5">
-                                <h5 id="digit-8-with-dda">.digit_8_with_dda()</h5>
-                                <p>Returns the digit in the ten-millions-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
-                            </div>
-
-                            <!-- digit_9_with_dda -->
-                            <div class="block_5">
-                                <h5 id="digit-9-with-dda">.digit_9_with_dda()</h5>
                                 <p>Returns the digit in the hundred-millions-place of <code>current_value</code> as <code>Some(positive_i8)</code> if it exists, or <code>None</code> if it doesn't.</p>
                             </div>
 
@@ -770,33 +701,33 @@
 
 
 
-                        <!-- Ticker Add Methods -->
+                        <!-- Ticker Sum Methods -->
                         <div class="block_4">
-                            <h4 id="ticker-add-methods">Ticker Add Methods</h4>
+                            <h4 id="ticker-sum-methods">Ticker Sum Methods</h4>
 
-                            <!-- add_to_start_value -->
+                            <!-- sum_to_start_value -->
                             <div class="block_5">
-                                <h5 id="add-to-start-value-v">.add_to_start_value(V)</h5>
+                                <h5 id="sum-to-start-value-v">.sum_to_start_value(V)</h5>
                                 <p>Adds to the <code>start_value</code> of the ticker by the passed value; negatives subtract. The result will never overflow or wrap, staying within <code>V::MIN</code> to <code>V::MAX</code> (inclusive).</p>
                                 <p>If the new <code>start_value</code> shifts the valid range such that <code>current_value</code> is left outside the boundaries, <code>current_value</code> is automatically clamped to the nearest valid edge.</p>
                             </div>
 
-                            <!-- add_to_current_value -->
+                            <!-- sum_to_current_value -->
                             <div class="block_5">
-                                <h5 id="add-to-current-value-v">.add_to_current_value(V)</h5>
+                                <h5 id="sum-to-current-value-v">.sum_to_current_value(V)</h5>
                                 <p>Adds to the <code>current_value</code> of the ticker by the passed value; negatives subtract. The result will never overflow or wrap, staying within <code>start_value</code> to <code>end_value</code> (inclusive).</p>
                             </div>
 
-                            <!-- add_to_end_value -->
+                            <!-- sum_to_end_value -->
                             <div class="block_5">
-                                <h5 id="add-to-end-value-v">.add_to_end_value(V)</h5>
+                                <h5 id="sum-to-end-value-v">.sum_to_end_value(V)</h5>
                                 <p>Adds to the <code>end_value</code> of the ticker by the passed value; negatives subtract. The result will never overflow or wrap, staying within <code>V::MIN</code> to <code>V::MAX</code> (inclusive).</p>
                                 <p>If the new <code>end_value</code> shifts the valid range such that <code>current_value</code> is left outside the boundaries, <code>current_value</code> is automatically clamped to the nearest valid edge.</p>
                             </div>
 
-                            <!-- add_to_time_interval -->
+                            <!-- sum_to_time_interval -->
                             <div class="block_5">
-                                <h5 id="add-to-time-interval-p">.add_to_time_interval(P)</h5>
+                                <h5 id="sum-to-time-interval-p">.sum_to_time_interval(P)</h5>
                                 <p>Adds to the <code>time_interval</code> of the ticker by the passed value; negatives subtract. <code>time_interval</code> can never be 0, negative, or exceed <code>P::MAX</code>, since that would cause <code>.tick()</code> to produce erratic values.</p>
                                 <p>This cannot be used to flip a ticker's tick direction — use <code>.tick_up()</code> or <code>.tick_down()</code> for that instead.</p>
                             </div>

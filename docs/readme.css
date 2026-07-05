@@ -299,7 +299,8 @@ p:last-child {
 /* ================================================================ */
 
 .block_1, .block_2, .block_3, .block_4, .block_5 {
-
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .block_1:last-child,
