@@ -1,7 +1,5 @@
 
 // Imports
-use bevy_ecs::prelude::*;
-use bevy_reflect::Reflect;
 use std::fmt::Display;
 use std::ops::{Add, AddAssign, Div, Rem, RemAssign, Sub, SubAssign};
 use half::f16;
@@ -208,7 +206,6 @@ impl TickerFloatBridge<f64> for f16 {
 ///     - `stored_time` is set to 0.0 when `current_value` hits `end_value`.  This ensures the time state is completely reset once it reaches the end.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "ticker_serialize", derive(serde::Deserialize, serde::Serialize))]
-#[cfg_attr(feature = "ticker_reflect", derive(Reflect), reflect(Clone, PartialEq))]
 pub enum TickerBehavior {
     Looper,
     Oneshot,
@@ -336,9 +333,8 @@ pub enum TickerBehavior {
 ///
 /// Due to the complexity of the .tick() method, it can not be properly summarized here. Go read its
 /// documentation if you'd like to know more about the method.
-#[derive(Component, Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 #[cfg_attr(feature = "ticker_serialize", derive(serde::Deserialize, serde::Serialize))]
-#[cfg_attr(feature = "ticker_reflect", derive(Reflect), reflect(Clone, PartialEq))]
 pub struct Ticker<V: TickerValue, P: TickerPrecision> {
     start_value:                V,
     current_value:              V,
@@ -386,7 +382,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// let ticker = Ticker::<i32, f32>::new(0, 10, 100, 1.0, false, true, true, TickerBehavior::Looper);
     /// assert_eq!(ticker.behavior(), TickerBehavior::Looper);
@@ -434,7 +430,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper(0, 100, 1.0, true);
     /// assert!(ticker.is_ticking_up());
@@ -471,7 +467,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 25, 100, 1.0, true, true);
     /// assert_eq!(ticker.behavior(), TickerBehavior::Looper);
@@ -518,7 +514,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// let ticker = Ticker::<i32, f32>::new_oneshot(0, 10, 1.0, true);
     /// assert_eq!(ticker.behavior(), TickerBehavior::Oneshot);
@@ -555,7 +551,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// let ticker = Ticker::<i32, f32>::new_oneshot_custom(0, 5, 10, 1.0, true, true);
     /// assert_eq!(ticker.behavior(), TickerBehavior::Oneshot);
@@ -642,7 +638,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(5, 5, 10, 1.0, true, true);
     /// assert_eq!(ticker.start_value(), 5);
@@ -656,7 +652,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 7, 10, 1.0, true, true);
     /// assert_eq!(ticker.current_value(), 7);
@@ -670,7 +666,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 20, 1.0, true, true);
     /// assert_eq!(ticker.end_value(), 20);
@@ -693,7 +689,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 2.5, true, true);
     /// assert_eq!(ticker.time_interval(), 2.5);
@@ -719,7 +715,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert_eq!(ticker.stored_time(), 0.0);
@@ -733,7 +729,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(!ticker.is_paused());
@@ -749,7 +745,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_unpaused());
@@ -765,7 +761,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_ticking_up());
@@ -779,7 +775,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(10, 10, 0, 1.0, false, true);
     /// assert!(ticker.is_ticking_down());
@@ -799,7 +795,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_handling_time_spikes());
@@ -813,7 +809,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper(0, 10, 1.0, true);
     /// assert_eq!(ticker.behavior(), TickerBehavior::Looper);
@@ -841,7 +837,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 20, 100, 1.0, true, true);
     /// ticker.set_start_value(40);
@@ -869,7 +865,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.set_current_value(5);
@@ -894,7 +890,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 80, 100, 1.0, true, true);
     /// ticker.set_end_value(50);
@@ -918,7 +914,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.pause();
@@ -933,7 +929,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.pause();
@@ -949,7 +945,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(5, 5, 0, 1.0, false, true);
     /// assert!(ticker.is_ticking_down());
@@ -965,7 +961,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_ticking_up());
@@ -983,7 +979,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, false);
     /// assert!(!ticker.is_handling_time_spikes());
@@ -1000,7 +996,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_handling_time_spikes());
@@ -1021,7 +1017,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.set_behavior(TickerBehavior::Oneshot);
@@ -1044,7 +1040,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_current_at_start());
@@ -1062,7 +1058,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 10, 10, 1.0, true, true);
     /// assert!(ticker.is_current_at_end());
@@ -1085,7 +1081,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(10, 10, 10, 1.0, true, true);
     /// assert!(ticker.is_start_at_end());
@@ -1105,7 +1101,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 35, 100, 1.0, true, true);
     /// assert_eq!(ticker.difference_from_start(), 35);
@@ -1122,7 +1118,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 35, 100, 1.0, true, true);
     /// assert_eq!(ticker.difference_from_end(), 65);
@@ -1139,7 +1135,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(10, 35, 100, 1.0, true, true);
     /// assert_eq!(ticker.difference_from_start_to_end(), 90);
@@ -1181,7 +1177,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
     /// want.  Here's an example using .digit_2():
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
@@ -1215,7 +1211,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
     /// want.  Here's an example using .digit_2():
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
@@ -1249,7 +1245,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
     /// want.  Here's an example using .digit_2():
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
@@ -1283,7 +1279,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
     /// want.  Here's an example using .digit_2():
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
@@ -1317,7 +1313,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
     /// want.  Here's an example using .digit_2():
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
@@ -1351,7 +1347,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
     /// want.  Here's an example using .digit_2():
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
@@ -1385,7 +1381,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
     /// want.  Here's an example using .digit_2():
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
@@ -1419,7 +1415,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
     /// want.  Here's an example using .digit_2():
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
@@ -1453,7 +1449,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Use .unwrap_or(INSERT_WHATEVER_HERE) after the digit call to replace `None` with a value you
     /// want.  Here's an example using .digit_2():
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehavior};
+    /// use lcc_counters::{Ticker, TickerBehavior};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehavior::Looper);
@@ -1483,7 +1479,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// // Case 1: Increasing start_value shifts the lower bound up, clamping current_value
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 20, 100, 1.0, true, true);
@@ -1517,7 +1513,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 40, 100, 1.0, true, true);
     /// ticker.sum_to_current_value(15);
@@ -1540,7 +1536,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// // Case 1: Shrinking the range pushes current_value out
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 80, 100, 1.0, true, true);
@@ -1580,7 +1576,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper(0, 10, 1.0, true);
     ///
@@ -1608,7 +1604,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 40, 100, 1.0, true, true);
     ///
@@ -1638,7 +1634,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 25, 100, 1.0, true, true);
     ///
@@ -1669,7 +1665,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 40, 100, 1.0, true, true);
     /// assert_eq!(ticker.current_value(), 40);
@@ -1690,7 +1686,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use lcc_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_looper_custom(0, 40, 100, 1.0, true, true);
     /// ticker.tick(1.3);

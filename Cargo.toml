@@ -1,70 +1,25 @@
 
 [package]
-name = "mirth_engine_tickers"
-version = "0.0.5"
+name = "lcc_counters"
+version = "0.0.1"
 edition = "2024"
-description = "A Bevy plugin with types (and their systems) purposed for tracking continously changing values over a given period of time."
-license = "MIT OR Apache-2.0"
+description = "A library of types purposed for making and tracking continously changing values."
+license = "Apache-2.0"
 
 
 
 [dependencies]
 # Required Dependencies
-bevy_app = { version = "0.19.0", default-features = false }
-bevy_ecs = { version = "0.19.0", default-features = false }
 half = { version = "2.7.1", default-features = false }
 
 # Optional Dependencies (Based on Which Features Are Activated)
-bevy_reflect = { version = "0.19.0", default-features = false, optional = true }
-bevy_time = { version = "0.19.0", default-features = false, optional = true }
 serde = { version = "1", default-features = false, features = ["derive"], optional = true }
-mirth_engine_testing_tools = { version = "0.0.5", optional = true }
-
-
 
 [features]
-default = [
-    "ticker_serialize",
-    "ticker_reflect",
-    "ticker_systems",
-]
-
-# FOR DEVELOPERS OF PACKAGE
-# Enable this when you need tools to test things inside the examples.
-# Adds the mirth_engine_testing_tools dependency, which is why this is disabled by default.
-testing_tools = ["mirth_engine_testing_tools"]
+default = []
 
 ########################### TICKER FEATURES ###############################
-
-# Enable this to make all Ticker types reflectable in the Tickers plugin.
-# Enabling this will add the bevy_reflect dependency and allow for the Tickers plugin to be usable.
-ticker_reflect = ["bevy_reflect", "bevy_app/bevy_reflect"]
-
-# Enable this if you want to serialize and deserialize Ticker data (e.g. for a save system).
-# Enabling this will enable ticker_reflect, add the serde dependency, and allow for the Tickers plugin to be usable as
-# they are required for serialization to work properly.
-ticker_serialize = ["serde", "ticker_reflect"]
-
-# Enable this to activate all Ticker systems inside the Tickers plugin; best to use when you don't plan on making custom Ticker systems.
-#
-# Enabling this will add the bevy_time dependency and every Ticker type will have its own system running each frame.
-# And yes, this does mean that if you don't use all the Ticker types then this will create for some inefficiency
-# and some little overhead.  But the overhead is rather small and the inefficiency is only present if you don't make
-# use of all the Ticker variations.  The overhead is created from querying Ticker variations that you're not using each
-# frame; this sounds a lot worse than it actually is - from what I can tell, Bevy's ECS design handles this kind of situation
-# rather well.
-#
-# SLIGHT DEVELOPER RANT
-# In a previous commit I had each system split into separate features, that way you could selectively choose which Ticker
-# system you wanted and avoid unnecessary overhead.  However, there was a problem.  When you add the Ticker type
-# you get ALL the variations of the type since it's defined generically, and I'm not getting rid of that; the generics
-# when used well can make things very memory efficient.  Because of this, you can use variations of Ticker and have only
-# some of the variations with systems active.  And that's just really fucking weird unless you are aware at all times that
-# such a thing is going on in the background.  Now, part of the reason why this SINGULAR feature exists is to avoid that
-# weirdness.  You turn it on, you get the Ticker systems for all the Ticker variations.  You turn it off, you should then be fully
-# aware that your Tickers need a custom system setup for them.  I have found this all or nothing method to be less confusing
-# and more intuitive at the cost of a minor efficiency gain.  But for those who disagree, feel free to check the commit
-# log on the repo and look at how I set up the features for each system - you can use that to construct the past version
-# of selective systems.  Or just make custom systems.
-ticker_systems = ["bevy_time"]
+# Enable this if you want to support serialization and deserialization of Ticker data (e.g. for a save system).
+# Enabling this will add the serde dependency.
+ticker_serialize = ["serde"]
 ###########################################################################
