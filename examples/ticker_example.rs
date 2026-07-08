@@ -1,14 +1,13 @@
 
 // Imports
 use half::f16;
-use lcc_counters::{Ticker, TickerBehavior, TickerPrecision};
+use onslaught_counters::{Ticker, TickerBehaviors, TickerPrecision};
 
 fn main() {
 
     // CUSTOMIZE YOUR TICKER
     // Change the fields to whatever you want to test any kind of ticker.
-    // Remember to declare mutability if you want to make use of methods that change the ticker's
-    // fields, or you can make use of the copy constructors following this ticker instantiation.
+    // Remember, the mut keyword is what makes ticking work.  To handle mutability of values, change the behavior.
     let mut ticker: Ticker<i8, f16> = Ticker::new(
         0,
         5,
@@ -17,7 +16,7 @@ fn main() {
         false,
         true,
         true,
-        TickerBehavior::Looper,
+        TickerBehaviors::Looper,
     );
 
     loop {

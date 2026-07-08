@@ -26,7 +26,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "lcc_counters"
+name = "onslaught_counters"
 version = "0.0.1"
 dependencies = [
  "half",

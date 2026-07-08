@@ -408,7 +408,7 @@ ol li::marker {
 
 /* Tier 1 Unordered List Icon*/
 ul > li::marker {
-    content: "■ ";
+    content: "▪ ";
     font-size: clamp(1rem, 0.9rem + 0.4vw, 1.3rem);
     color: #fffcdd;
 }

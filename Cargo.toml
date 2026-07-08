@@ -1,6 +1,6 @@
 
 [package]
-name = "lcc_counters"
+name = "onslaught_counters"
 version = "0.0.1"
 edition = "2024"
 description = "A library of types purposed for making and tracking continously changing values."
