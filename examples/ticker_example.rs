@@ -1,6 +1,8 @@
-use std::time::Instant;
+
 // Imports
 use half::f16;
+use std::thread::sleep;
+use std::time::{Duration, Instant};
 use onslaught_counters::{Ticker, TickerBehaviors, TickerPrecision};
 
 fn main() {
@@ -19,9 +21,10 @@ fn main() {
         TickerBehaviors::Looper,
     );
 
-    // TICK USAGE
-    // The below code is my way to run things by seconds, feel free to use whatever calculation
-    // you want to test out the tick method.  Just figure out what delta you want to use.
+
+    // TICKING
+    // The below code is my way to run things by seconds (it's rough, it's just there to be a quick example),
+    // feel free to use whatever calculation you want to test out the tick method.  Figure out your delta.
     let mut last_time = Instant::now();
     loop {
         // Printing out all the values within each field of the ticker.
@@ -35,5 +38,7 @@ fn main() {
 
         // Tick the ticker according to its set precision.
         ticker.tick(TickerPrecision::from_f64(delta_secs));
+
+        sleep(Duration::from_millis(16)); // ~60 iterations/sec, mimics a frame rate
     }
 }

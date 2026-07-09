@@ -422,7 +422,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new(0, 10, 100, 1.0, false, true, true, TickerBehaviors::MutLooper);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
@@ -471,7 +471,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper(0, 100, 1.0, true);
     /// assert!(ticker.is_ticking_up());
@@ -509,7 +509,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(0, 25, 100, 1.0, true, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::Looper);
@@ -556,7 +556,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper(10, 0, 1.0, true);
     /// assert!(ticker.is_ticking_down());
@@ -594,7 +594,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 50, 100, 1.0, true, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
@@ -642,7 +642,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_oneshot(0, 10, 1.0, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::Oneshot);
@@ -680,7 +680,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_oneshot_custom(0, 5, 10, 1.0, true, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::Oneshot);
@@ -728,7 +728,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_oneshot(0, 100, 2.0, false);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutOneshot);
@@ -766,7 +766,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_oneshot_custom(10, 20, 30, 1.0, true, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutOneshot);
@@ -814,7 +814,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_freezing(0, 100, 1.0, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::Freezing);
@@ -852,7 +852,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_freezing_custom(0, 0, 10, 1.0, true, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::Freezing);
@@ -937,7 +937,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(5, 5, 10, 1.0, true, true);
     /// assert_eq!(ticker.start_value(), 5);
@@ -951,7 +951,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 7, 10, 1.0, true, true);
     /// assert_eq!(ticker.current_value(), 7);
@@ -965,7 +965,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 20, 1.0, true, true);
     /// assert_eq!(ticker.end_value(), 20);
@@ -988,7 +988,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 2.5, true, true);
     /// assert_eq!(ticker.time_interval(), 2.5);
@@ -1014,7 +1014,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert_eq!(ticker.stored_time(), 0.0);
@@ -1028,7 +1028,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(!ticker.is_paused());
@@ -1044,7 +1044,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_unpaused());
@@ -1060,7 +1060,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_ticking_up());
@@ -1074,7 +1074,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(10, 10, 0, 1.0, false, true);
     /// assert!(ticker.is_ticking_down());
@@ -1094,7 +1094,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_handling_time_spikes());
@@ -1108,7 +1108,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper(0, 10, 1.0, true);
     /// assert_eq!(ticker.behavior(), TickerBehaviors::MutLooper);
@@ -1139,7 +1139,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// #### What If I Want Something Instead of None?
     /// Use `.unwrap_or(INSERT_WHATEVER_HERE)` after the call to replace `None` with a value you want.
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// // current_value is set to 6, so there is no 2nd digit in current_value
     /// let ticker = Ticker::<i32, f32>::new(0, 6, 100, 1.0, false, true, true, TickerBehaviors::Looper);
@@ -1151,7 +1151,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// Basic digit extraction across multiple places:
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new(0, 1234, 10000, 1.0, false, true, true, TickerBehaviors::Looper);
     ///
@@ -1164,7 +1164,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// The ones place always exists, even when `current_value` is `0`:
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new(0, 0, 100, 1.0, false, true, true, TickerBehaviors::Looper);
     /// assert_eq!(ticker.digit(1), Some(0));
@@ -1174,7 +1174,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// Negative values are handled the same as positive ones, since `digit` operates on
     /// the absolute value of `current_value`:
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new_looper_custom(-100, -42, 0, 1.0, false, true);
     /// assert_eq!(ticker.digit(1), Some(2));
@@ -1185,7 +1185,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     /// A digit that exists but happens to be `0` returns `Some(0)`, distinguishing it from
     /// a digit that doesn't exist at all (`None`):
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new(0, 1003, 10000, 1.0, false, true, true, TickerBehaviors::Looper);
     /// assert_eq!(ticker.digit(3), Some(0)); // hundreds place exists, and is 0
@@ -1194,7 +1194,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// A `place` outside the supported `1..=10` range returns `None`:
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let ticker = Ticker::<i32, f32>::new(0, 42, 100, 1.0, false, true, true, TickerBehaviors::Looper);
     /// assert_eq!(ticker.digit(0), None);
@@ -1247,7 +1247,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 20, 100, 1.0, true, true);
     /// ticker.set_start_value(40);
@@ -1267,6 +1267,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
             // 3. Clamp current_value to stay within the updated boundaries.
             self.current_value = self.current_value.clamp(min_boundary, max_boundary);
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
 
     /// Changes `current_value` to the passed value.
@@ -1277,7 +1280,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.set_current_value(5);
@@ -1289,6 +1292,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
             let min = self.start_value.min(self.end_value);
             let max = self.start_value.max(self.end_value);
             self.current_value = value.clamp(min, max);
+        }
+        else {
+            panic_and_print_mutability_message();
         }
     }
 
@@ -1304,7 +1310,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 80, 100, 1.0, true, true);
     /// ticker.set_end_value(50);
@@ -1324,13 +1330,16 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
             // 3. Clamp current_value to stay within the updated boundaries.
             self.current_value = self.current_value.clamp(min_boundary, max_boundary);
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
 
     /// Prevents .tick() calls on a ticker from doing their job.
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.pause();
@@ -1341,13 +1350,16 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         if self.is_mutable() {
             self.is_paused = true;
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
 
     /// Allows .tick() calls on a ticker to do their job.
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.pause();
@@ -1359,13 +1371,16 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         if self.is_mutable() {
             self.is_paused = false;
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
 
     /// Causes the ticker's current_value to count up.
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(5, 5, 0, 1.0, false, true);
     /// assert!(ticker.is_ticking_down());
@@ -1377,13 +1392,16 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         if self.is_mutable() {
             self.is_ticking_up = true;
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
 
     /// Causes the ticker's current_value to count down.
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_ticking_up());
@@ -1395,6 +1413,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         if self.is_mutable() {
             self.is_ticking_up = false;
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
 
     /// Will make it so that .tick() calls on a ticker are to add or subtract all built-up integer time since
@@ -1403,7 +1424,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, false);
     /// assert!(!ticker.is_handling_time_spikes());
@@ -1415,6 +1436,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         if self.is_mutable() {
             self.is_handling_time_spikes = true;
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
 
     /// Will make it so that .tick() calls on a ticker are to add or subtract 1 to `current_value`;
@@ -1422,7 +1446,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_handling_time_spikes());
@@ -1433,6 +1457,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     pub fn stop_handling_time_spikes(&mut self) {
         if self.is_mutable() {
             self.is_handling_time_spikes = false;
+        }
+        else {
+            panic_and_print_mutability_message();
         }
     }
 
@@ -1451,7 +1478,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::{Ticker, TickerBehaviors};
+    /// use onslaught_counters::{Ticker, TickerBehaviors};
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// ticker.set_behavior(TickerBehaviors::Oneshot);
@@ -1460,6 +1487,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     pub fn set_behavior(&mut self, new_behavior: TickerBehaviors) {
         if self.is_mutable() {
             self.behavior = new_behavior;
+        }
+        else {
+            panic_and_print_mutability_message();
         }
     }
     // ######################################################################################## //
@@ -1475,7 +1505,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 0, 10, 1.0, true, true);
     /// assert!(ticker.is_current_at_start());
@@ -1493,7 +1523,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 10, 10, 1.0, true, true);
     /// assert!(ticker.is_current_at_end());
@@ -1516,7 +1546,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(10, 10, 10, 1.0, true, true);
     /// assert!(ticker.is_start_at_end());
@@ -1536,7 +1566,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 35, 100, 1.0, true, true);
     /// assert_eq!(ticker.difference_from_start(), 35);
@@ -1553,7 +1583,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 35, 100, 1.0, true, true);
     /// assert_eq!(ticker.difference_from_end(), 65);
@@ -1570,7 +1600,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(10, 35, 100, 1.0, true, true);
     /// assert_eq!(ticker.difference_between_boundaries(), 90);
@@ -1595,7 +1625,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// // Case 1: Increasing start_value shifts the lower bound up, clamping current_value
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 20, 100, 1.0, true, true);
@@ -1623,6 +1653,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
             // 3. Clamp current_value to stay within the updated boundaries.
             self.current_value = self.current_value.clamp(min_boundary, max_boundary);
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
 
     /// Adds to the `current_value` of the ticker by the passed value.  Can take in negatives for subtraction.
@@ -1631,7 +1664,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 40, 100, 1.0, true, true);
     /// ticker.sum_to_current_value(15);
@@ -1643,6 +1676,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
             let min = self.start_value.min(self.end_value);
             let max = self.start_value.max(self.end_value);
             self.current_value = self.current_value.sat_add(value).clamp(min, max);
+        }
+        else {
+            panic_and_print_mutability_message();
         }
     }
 
@@ -1656,7 +1692,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// // Case 1: Shrinking the range pushes current_value out
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 80, 100, 1.0, true, true);
@@ -1683,6 +1719,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
             // 3. Clamp current_value to stay within the updated boundaries.
             self.current_value = self.current_value.clamp(min_boundary, max_boundary);
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
 
     /// Adds to the `time_interval` of the ticker by the passed value.  Can take in negatives for subtraction.
@@ -1698,7 +1737,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper(0, 10, 1.0, true);
     ///
@@ -1715,6 +1754,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         if self.is_mutable() {
             self.time_interval = (self.time_interval + value).clamp(P::MIN_POSITIVE, P::MAX);
         }
+        else {
+            panic_and_print_mutability_message();
+        }
     }
     // ########################################################################################## //
 
@@ -1728,7 +1770,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 40, 100, 1.0, true, true);
     ///
@@ -1758,7 +1800,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 25, 100, 1.0, true, true);
     ///
@@ -1789,7 +1831,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 40, 100, 1.0, true, true);
     /// assert_eq!(ticker.current_value(), 40);
@@ -1800,6 +1842,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     pub fn soft_reset(&mut self) {
         if self.is_mutable() {
             self.current_value = self.start_value;
+        }
+        else {
+            panic_and_print_mutability_message();
         }
     }
 
@@ -1812,7 +1857,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let mut ticker = Ticker::<i32, f32>::new_mut_looper_custom(0, 40, 100, 1.0, true, true);
     /// ticker.tick(1.3);
@@ -1826,6 +1871,9 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
         if self.is_mutable() {
             self.current_value = self.start_value;
             self.stored_time = P::from_f64(0.0);
+        }
+        else {
+            panic_and_print_mutability_message();
         }
     }
     // ########################################################################################## //
@@ -2024,7 +2072,7 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     ///
     /// #### Example
     /// ```
-    /// use mirth_engine_tickers::Ticker;
+    /// use onslaught_counters::Ticker;
     ///
     /// let looper = Ticker::<i32, f32>::new_looper(0, 10, 1.0, true);
     /// assert!(!looper.is_mutable());
@@ -2058,15 +2106,24 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
     // ############################################################################################## //
 }
 
+// ##################################### PANIC FUNCTIONS ######################################## //
+/// Used to cause a `PANIC` when something attempts to mutate an immutable ticker.
+/// The printed message will explain the ways to avoid the `PANIC`.
+fn panic_and_print_mutability_message() {
+    panic!(
+        "{}[TICKER PANIC]{} You are attempting to mutate an immutable Ticker.  You can avoid this panic in 3 different ways:
+        1. Change the behavior of the ticker to be mutable through constructing a copy using the new_copy_with_behavior_change constructor, and then replace the immutable version with the mutable copy.
+        2. Instantiate the ticker with a mutable behavior, not an immutable one.
+        3. Do a mutation state check using .is_mutable() on a ticker before attempting to mutate it.",
+        "\x1b[31m", "\x1b[0m",
+    )
+}
 
-
-/// Checks if a value falls within the provided minimum and maximum range (inclusive).
+/// Checks if a value falls within the provided minimum and maximum range (inclusive), will `PANIC` if the value is outside the provided range.
+/// If a `PANIC` were to occur, a printed message will be displayed to explain how to avoid the `PANIC`.
 ///
 /// Accepts any type that implements [`PartialOrd`] and [`Display`], meaning
 /// all numeric primitives, [`char`], [`String`], and [`&str`] are valid inputs.
-///
-/// #### Can This Panic?
-/// Panics if the value is outside the provided range.
 ///
 /// #### Example
 /// ```ignore
@@ -2076,7 +2133,11 @@ impl<V: TickerValue, P: TickerPrecision> Ticker<V, P> {
 fn check_if_value_is_within_range<T: PartialOrd + Display>(value: T, minimum: T, maximum: T) {
     assert!(
         value >= minimum && value <= maximum,
-        "{}[FAIL]{} Ticker value must be between {} and {} (inclusive). Got {}.",
+        "{}[TICKER PANIC]{} Ticker value must be between {} and {} (inclusive). Got {}.  You can avoid this panic by doing the following:
+        1. Make sure your Ticker constructor has the current_value set to a number that is between start_value and end_value (inclusive).
+        2. Make sure your Ticker constructor has the start_value set to a number that is between TickerValue::MIN and TickerValue::MAX (inclusive).
+        3. Make sure your Ticker constructor has the end_value set to a number that is between TickerValue::MIN and TickerValue::MAX (inclusive).",
         "\x1b[31m", "\x1b[0m", minimum, maximum, value
     );
 }
+// ############################################################################################## //

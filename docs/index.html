@@ -144,6 +144,7 @@
                         <!-- ToC : Ticker Helper Methods -->
                         <div class="nav_box_4">
                             <a href="#ticker-helper-methods">Ticker Helper Methods</a>
+                            <div class="nav_box_5"><a href="#is-mutable">is_mutable</a></div>
                             <div class="nav_box_5"><a href="#print-information">print_information</a></div>
                         </div>
 
@@ -162,8 +163,8 @@
             <p id="title">Counters README</p>
             <p><b style="color: #ffeeee">WARNING : <em style="color: #f1f198">I can be wrong, and I encourage you to do your own research before trusting my words at face-value.</em></b></p>
             <p>Counters is a library of custom types that can be used to handle time or generalized counting.</p>
-            <p>If you enjoy negative numbers, an easy way to grab digits, and like to manage the memory of your types, then I encourage you to read on and explore the <a href="https://docs.rs/mirth_engine_tickers" target="_blank" rel="noopener noreferrer">docs.rs page</a> for the package if you get the time.</p>
-            <p>Fair warning, the <a href="https://docs.rs/mirth_engine_tickers" target="_blank" rel="noopener noreferrer">docs.rs page</a> will ultimately contain more information than this README.  This is due to the fact that it's purposed to help explain things while actively coding with the types in this package.  The README is more organized and purposed for summary, all at the cost of less explanation.</p>
+            <p>If you enjoy negative numbers, an easy way to grab digits, and like to manage the memory of your types, then I encourage you to read on and explore the <a href="https://docs.rs/mirth_engine_tickers" target="_blank" rel="noopener noreferrer">docs.rs page</a> for the package if you get the time.  Fair warning, the <a href="https://docs.rs/mirth_engine_tickers" target="_blank" rel="noopener noreferrer">docs.rs page</a> will ultimately contain more information than this README.  This is due to the fact that it's purposed to help explain things while actively coding with the types in this package.  The README is more organized and purposed for summary, all at the cost of less explanation.</p>
+            <p>Lastly, if you'd like to see these types in action within a real-world example then feel free to head over to this <a href="https://github.com/Mirth-Development/mirth_engine_counters" target="_blank" rel="noopener noreferrer">repository</a> where the types in this package are slightly reimplemented to be used inside the Bevy game engine.</p>
 
             <!-- ============================================================ -->
             <!-- HOW TO USE THE PACKAGE                                       -->
@@ -224,7 +225,19 @@
                     <p>In long, Ticker is a struct that can be used to create self-contained counters that advance a value (<code>current_value</code>) between two boundaries (<code>start_value</code> and <code>end_value</code>) at a fixed or dynamic rate, driven by calls to the <code>.tick()</code> method. Depending on its <code>behavior</code>, a ticker can loop back to <code>start_value</code> when it reaches a boundary, stop at the boundary it hits, or become locked in place once it reaches <code>end_value</code>.
                     <p>"Time" here is intentionally generic — <code>.tick()</code> doesn't assume seconds, frames, or any specific unit. It just compares whatever delta you feed <code>.tick()</code> against <code>time_interval</code> and advances <code>current_value</code> accordingly, which is what lets the same ticker logic drive a frame-timed cooldown, a world clock, or anything else that changes over some unit of "time".</p>
                     <p>A ticker's unit of time will be equal to the unit of the number you pass into its .tick() call(s).</p>
-                    <p>Ticker holds the following fields:</p>
+                    <br>
+                    
+                    <!-- Important Things To Know About Ticker -->
+                    <p id="important-things-to-know-about-ticker" style="text-align: center"><b>Important Things To Know About Ticker</b></p>
+                    <ul>
+                        <li>An instance of Ticker should always be declared with the <code>mut</code> keyword.  We do this since tickers are purposed to tick, and ticking always has the potential to change <code>current_value</code> and <code>stored_time</code>.  Not applying <code>mut</code> will make <code>.tick()</code> cause a <code>panic</code>.</li>
+                        <li>Attempting to mutate a ticker with an immutable behavior will cause a <code>panic</code>.  Safe mutation attempts can be done using checks that involve the <code>.is_mutable()</code> method or by using the constructor named <code>copy_with_behavior_change</code> intelligently.</li>
+                        <li>The <code>behavior</code> of a Ticker instance impacts its mutability.  Read the heading <a href="#mutability-of-ticker">Mutability of Ticker</a> for more information.</li>
+                    </ul>
+                    <br>
+
+                    <!-- Ticker Fields -->
+                    <p id="ticker-fields" style="text-align: center"><b>Ticker Fields</b></p>
                     <ul>
                         <li><code>start_value</code></li>
                         <li><code>current_value</code></li>
@@ -235,8 +248,10 @@
                         <li><code>is_handling_time_spikes</code></li>
                         <li><code>behavior</code></li>
                     </ul>
+                    <br>
 
-                    <p>Ticker has the following type declarations:</p>
+                    <!-- Ticker Type Declarations -->
+                    <p id="ticker-type-declarations" style="text-align: center"><b>Ticker Type Declarations</b></p>
                     <ul>
                         <li><code>Ticker&lt;i8, f16&gt;</code> : 51+ Bits</li>
                         <li><code>Ticker&lt;i16, f16&gt;</code> : 83+ Bits</li>
@@ -251,9 +266,16 @@
                     <p>The "+" in the bit count is to recognize that the <code>behavior</code> field holds an enum value, and I have no idea how many bits an enum declaration represents.</p>
                     <br>
 
-                    <p><b>What Exactly is Mutable in Tickers?</b></p>
-                    <p>First off, a ticker should always be declared with the <code>mut</code> keyword.  We do this since tickers are purposed to tick, and ticking always has the potential to change <code>current_value</code> and <code>stored_time</code>.  From there, the actual mutability of a ticker's fields is dependent on its <code>behavior</code>.  Here is some info regarding such a thing:</p>
+                    <!-- Mutability of Ticker -->
+                    <p id="mutability-of-ticker" style="text-align: center"><b>Mutability of Ticker</b></p>
+                    <p>The mutability of a Ticker instance is dependent on the <code>behavior</code> its set to, and whether the <code>mut</code> keyword is used.  Here is some info regarding such a thing:</p>
                     <ul>
+                        <li><b><code>mut Keyword Usage</code></b>
+                            <ul>
+                                <li><b>Keyword Used :</b> Ticker can be ticked.</li>
+                                <li><b>Keyword Not Used :</b> Ticker can <u>not</u> be ticked.</li>
+                            </ul>
+                        </li>
                         <li><b><code>Behavior is Mutable</code></b>
                             <ul>
                                 <li>Every field besides <code>stored_time</code> can be manipulated directly.</li>
