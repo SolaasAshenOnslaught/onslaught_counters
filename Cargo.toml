@@ -1,18 +1,13 @@
 
 [package]
 name = "onslaught_counters"
-version = "0.0.3"
+version = "0.0.1"
 edition = "2024"
 description = "A library of types purposed for making and tracking continously changing values."
-license = "Apache-2.0"
-
-
+license = "Zero-Clause BSD"
 
 [dependencies]
-# Required Dependencies
 half = { version = "2.7.1", default-features = false }
-
-# Optional Dependencies (Based on Which Features Are Activated)
 serde = { version = "1", default-features = false, features = ["derive"], optional = true }
 
 [features]

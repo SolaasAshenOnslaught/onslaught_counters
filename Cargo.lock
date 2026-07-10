@@ -27,7 +27,7 @@ dependencies = [
 
 [[package]]
 name = "onslaught_counters"
-version = "0.0.3"
+version = "0.0.1"
 dependencies = [
  "half",
  "serde",
