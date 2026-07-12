@@ -3,8 +3,8 @@
 name = "onslaught_counters"
 version = "0.0.1"
 edition = "2024"
-description = "A library of types purposed for making and tracking continously changing values."
-license = "Zero-Clause BSD"
+description = "A library of types purposed for making and tracking continuously changing values."
+license = "0BSD"
 
 [dependencies]
 half = { version = "2.7.1", default-features = false }
