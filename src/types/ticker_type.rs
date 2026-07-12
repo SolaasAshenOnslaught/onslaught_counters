@@ -21,9 +21,9 @@ Copy                    // TickerValue types are integers, which means they're s
 + Sub<Output = Self>
 + Div<Output = Self>
 + Rem<Output = Self>
-+ Send                  // Needed for Bevy queries; also lets Tickers move safely across threads.
-+ Sync                  // Needed for Bevy queries; also lets Tickers be shared safely across threads.
-+ 'static               // Needed for Bevy queries; also enforces that TickerValue types own their data, with no borrowed lifetimes.
++ Send
++ Sync
++ 'static
 {
     const MIN: Self;
     const MAX: Self;
@@ -105,9 +105,9 @@ Copy                    // TickerPrecision types are floats, which means they're
 + AddAssign
 + SubAssign
 + RemAssign
-+ Send                  // Needed for Bevy queries; also lets Tickers move safely across threads.
-+ Sync                  // Needed for Bevy queries; also lets Tickers be shared safely across threads.
-+ 'static               // Needed for Bevy queries; also enforces that TickerPrecision types own their data, with no borrowed lifetimes.
++ Send
++ Sync
++ 'static
 {
     const MIN_POSITIVE: Self;
     const MAX: Self;
